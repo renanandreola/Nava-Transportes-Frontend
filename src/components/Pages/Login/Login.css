@@ -156,7 +156,7 @@ body{
 .form-footer{ display:flex; justify-content:space-between; align-items:center; margin-top:4px; }
 .muted{ color:var(--muted); font-size:12px; }
 .card-foot{ display:flex; align-items:center; gap:10px; margin-top:22px; color:var(--muted); font-size:12px; }
-.badge{ display:inline-block; padding:4px 8px; border-radius:999px; background:#f2f4f7; border:1px solid var(--line) }
+.badge{ display:inline-block; padding:4px 8px; border-radius:999px; background:#f2f4f7; border:1px solid var(--line); color: black !important; }
 .sep{ width:1px; height:12px; background:var(--line); display:inline-block }
 
 /* erro sutil */
