@@ -13,22 +13,52 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState("");
 
+  React.useEffect(() => {
+    let alive = true;
+    (async () => {
+      try {
+        const { data } = await api.get("/auth/me");
+        if (!alive || !data?.user) return;
+        const role = data.user.role;
+        if (role === "admin") {
+          navigate("/admin", { replace: true });
+        } else {
+          navigate("/driver", { replace: true });
+        }
+      } catch {}
+    })();
+    return () => { alive = false; };
+  });
+
   const onSubmit = async (e) => {
     e.preventDefault();
-    if (loading) return;
     setErr("");
     setLoading(true);
     try {
-      await api.post("/auth/login", { email, password });
-      // confirmação opcional da sessão (evita qualquer corrida)
-      await api.get("/auth/me");
-      navigate("/home", { replace: true });
+      // login
+      const resp = await api.post("/auth/login", { email, password });
+
+      // opção A: usar o role que já vem na resposta do login
+      let role = resp?.data?.user?.role;
+
+      // opção B (mais robusta): confirmar com /auth/me
+      try {
+        const me = await api.get("/auth/me");
+        role = me?.data?.user?.role || role;
+      } catch {}
+
+      if (role === "admin") {
+        navigate("/admin", { replace: true });
+      } else {
+        navigate("/driver", { replace: true });
+      }
     } catch (error) {
       setErr(error?.response?.data?.message || "Falha ao autenticar");
     } finally {
       setLoading(false);
     }
   };
+
 
   return (
     <div className="nava-login">

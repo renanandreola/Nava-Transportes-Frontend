@@ -2,12 +2,13 @@ import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import ScrollToTop from "../Layout/ScrollToTop";
 import Login from "../Pages/Login/Login";
-import Home from "../Pages/Home/Home";
-import RequireAuth from "./RequireAuth";
+// import Home from "../Pages/Home/Home";
+// import RequireAuth from "./RequireAuth";
 import RequireRole from "./RequireRole";
 import AdminLayout from "../Pages/Admin/AdminLayout";
 import AdminDashboard from "../Pages/Admin/AdminDashboard";
 import AdminUsers from "../Pages/Admin/AdminUsers";
+import DriverHome from "../Pages/Driver/DriverHome";
 
 function RouteComponent() {
   return (
@@ -16,12 +17,16 @@ function RouteComponent() {
       <Routes>
         <Route path="/" element={<Login />} />
 
+        {/* compatibilidade: /home -> /driver */}
+        <Route path="/home" element={<Navigate to="/driver" replace />} />
+
+        {/* Área Driver (usuário comum) */}
         <Route
-          path="/home"
+          path="/driver"
           element={
-            <RequireAuth>
-              <Home />
-            </RequireAuth>
+            <RequireRole role="driver">
+              <DriverHome />
+            </RequireRole>
           }
         />
 
@@ -31,7 +36,7 @@ function RouteComponent() {
           element={
             <RequireRole role="admin">
               <AdminLayout />
-              </RequireRole>
+            </RequireRole>
           }
         >
           <Route index element={<AdminDashboard />} />
