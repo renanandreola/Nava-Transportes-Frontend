@@ -9,6 +9,7 @@ import AdminLayout from "../Pages/Admin/AdminLayout";
 import AdminDashboard from "../Pages/Admin/AdminDashboard";
 import AdminUsers from "../Pages/Admin/AdminUsers";
 import DriverHome from "../Pages/Driver/DriverHome";
+import DriverTripForm from "../Pages/Driver/DriverTripForm";
 
 function RouteComponent() {
   return (
@@ -42,6 +43,24 @@ function RouteComponent() {
           <Route index element={<AdminDashboard />} />
           <Route path="users" element={<AdminUsers />} />
         </Route>
+
+        <Route
+          path="/driver"
+          element={
+            <RequireRole role="driver">
+              <DriverHome />   {/* pode manter */}
+            </RequireRole>
+          }
+        />
+
+        <Route
+          path="/driver/trips/new"
+          element={
+            <RequireRole role="driver">
+              <DriverTripForm />
+            </RequireRole>
+          }
+        />
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

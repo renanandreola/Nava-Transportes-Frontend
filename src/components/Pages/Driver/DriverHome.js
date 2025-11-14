@@ -1,7 +1,10 @@
 import React from "react";
 import "./driver.css";
+import { useNavigate } from "react-router-dom";
 
 export default function DriverHome() {
+    const navigate = useNavigate();
+    
   return (
     <div className="card">
       <div className="card-head">
@@ -10,12 +13,9 @@ export default function DriverHome() {
       </div>
 
       <div style={{ padding: 8 }}>
-        <ul className="muted" style={{ margin: 0 }}>
-          <li>Painel com viagens/rotas</li>
-          <li>Minhas entregas</li>
-          <li>Comprovantes / documentos</li>
-          <li>Perfil e alteração de senha</li>
-        </ul>
+        <button className="btn primary" onClick={() => navigate("/driver/trips/new")}>
+          Novo Controle de Saída
+        </button>
       </div>
     </div>
   );
