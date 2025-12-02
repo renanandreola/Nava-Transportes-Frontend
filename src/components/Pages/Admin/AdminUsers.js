@@ -88,7 +88,7 @@ export default function AdminUsers() {
         <div className="row gap">
           <input
             className="inp"
-            placeholder="Buscar por nome ou e-mail"
+            placeholder="Buscar por nome ou usuário"
             value={q}
             onChange={(e) => setQ(e.target.value)}
           />
@@ -112,7 +112,7 @@ export default function AdminUsers() {
           <thead>
             <tr>
               <th>Nome</th>
-              <th>E-mail</th>
+              <th>Usuário</th>
               <th>Função</th>
               <th>Status</th>
             </tr>
@@ -169,10 +169,10 @@ export default function AdminUsers() {
               </label>
 
               <label>
-                E-mail
+                Placa
                 <input
                   className="inp"
-                  type="email"
+                  type="text"
                   value={fEmail}
                   onChange={(e) => setFEmail(e.target.value)}
                   required

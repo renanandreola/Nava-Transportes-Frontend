@@ -10,6 +10,7 @@ import AdminDashboard from "../Pages/Admin/AdminDashboard";
 import AdminUsers from "../Pages/Admin/AdminUsers";
 import DriverHome from "../Pages/Driver/DriverHome";
 import DriverTripForm from "../Pages/Driver/DriverTripForm";
+import DriverTripList from "../Pages/Driver/DriverTripList";
 
 function RouteComponent() {
   return (
@@ -58,6 +59,15 @@ function RouteComponent() {
           element={
             <RequireRole role="driver">
               <DriverTripForm />
+            </RequireRole>
+          }
+        />
+
+        <Route
+          path="/driver/trips"
+          element={
+            <RequireRole role="driver">
+              <DriverTripList />
             </RequireRole>
           }
         />

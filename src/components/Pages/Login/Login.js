@@ -90,12 +90,12 @@ export default function Login() {
 
         <form className={`nava-form ${err ? "shake" : ""}`} onSubmit={onSubmit}>
           <label className="field">
-            <span>E-mail</span>
+            <span>Seu usuário</span>
             <div className="field-box with-icon">
               <span className="icon" aria-hidden>📧</span>
               <input
-                type="email"
-                placeholder="email@dominio.com"
+                type="text"
+                placeholder="Usuário"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 autoFocus
