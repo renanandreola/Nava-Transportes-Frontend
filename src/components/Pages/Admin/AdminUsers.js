@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import api from "../../../services/api";
+import "./AdminUsers.css";
 
 export default function AdminUsers() {
   const [list, setList] = useState([]);
@@ -17,7 +18,7 @@ export default function AdminUsers() {
     setLoading(true);
     try {
       const { data } = await api.get("/admin/users", {
-        params: { q, limit: 50 }
+        params: { q, limit: 50 },
       });
       setList(data.items || []);
     } finally {
@@ -37,7 +38,7 @@ export default function AdminUsers() {
     setFPass("");
     setOpen(true);
     setAllowBackdropClose(false);
- 
+
     setTimeout(() => setAllowBackdropClose(true), 150);
   };
 
@@ -66,7 +67,7 @@ export default function AdminUsers() {
         email: fEmail.trim(),
         password: fPass,
         role: "driver",
-        active: true
+        active: true,
       });
       setOpen(false);
       await fetchData();
@@ -78,68 +79,84 @@ export default function AdminUsers() {
   };
 
   return (
-    <div className="card">
-      <div className="card-head row">
-        <div>
-          <h2>Usuários (Motoristas)</h2>
-          <p className="muted">Cadastre e gerencie os acessos dos motoristas.</p>
+    <div className="admin-page">
+      <div className="card admin-main-card">
+        <div className="card-head row">
+          <div>
+            <h2>Motoristas</h2>
+            <p className="muted">
+              Cadastre e gerencie os acessos dos motoristas.
+            </p>
+          </div>
+
+          <div className="row gap users-actions">
+            <input
+              className="form-control users-search-input"
+              placeholder="Buscar por nome ou usuário"
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+            />
+            <button
+              className="btn btn-secondary"
+              type="button"
+              onClick={fetchData}
+              disabled={loading}
+            >
+              {loading ? "Buscando..." : "Buscar"}
+            </button>
+            <button
+              className="btn btn-primary"
+              type="button"
+              onClick={openModal}
+              aria-haspopup="dialog"
+              aria-expanded={open ? "true" : "false"}
+            >
+              Novo usuário
+            </button>
+          </div>
         </div>
 
-        <div className="row gap">
-          <input
-            className="inp"
-            placeholder="Buscar por nome ou usuário"
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-          />
-          <button className="btn" type="button" onClick={fetchData}>
-            Buscar
-          </button>
-          <button
-            className="btn primary"
-            type="button"
-            onClick={openModal}
-            aria-haspopup="dialog"
-            aria-expanded={open ? "true" : "false"}
-          >
-            Novo usuário
-          </button>
-        </div>
-      </div>
-
-      <div className="table-wrap">
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Nome</th>
-              <th>Usuário</th>
-              <th>Função</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {!loading && list.length === 0 && (
+        <div className="users-table-wrap">
+          <table className="table table-striped users-table">
+            <thead>
               <tr>
-                <td colSpan="4" className="muted">
-                  Sem resultados
-                </td>
+                <th>Nome</th>
+                <th>Usuário</th>
+                <th>Função</th>
+                <th>Status</th>
               </tr>
-            )}
-            {list.map((u) => (
-              <tr key={u._id}>
-                <td>{u.name}</td>
-                <td>{u.email}</td>
-                <td>{u.role}</td>
-                <td>{u.active ? "Ativo" : "Inativo"}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {!loading && list.length === 0 && (
+                <tr>
+                  <td colSpan="4" className="muted users-center-cell">
+                    Sem resultados
+                  </td>
+                </tr>
+              )}
+              {list.map((u) => (
+                <tr key={u._id}>
+                  <td>{u.name}</td>
+                  <td>{u.email}</td>
+                  <td>{u.role}</td>
+                  <td>{u.active ? "Ativo" : "Inativo"}</td>
+                </tr>
+              ))}
+              {loading && (
+                <tr>
+                  <td colSpan="4" className="muted users-center-cell">
+                    Carregando…
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {open && (
         <div
-          className="modal"
+          className="admin-modal"
           role="dialog"
           aria-modal="true"
           onClick={(e) => {
@@ -148,61 +165,73 @@ export default function AdminUsers() {
             }
           }}
         >
-          <div className="modal-card pop" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="admin-modal-card pop"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="modal-head">
               <h3>Novo usuário</h3>
-              <button className="btn-ghost" type="button" onClick={closeModal}>
+              <button
+                className="btn btn-sm btn-outline-light"
+                type="button"
+                onClick={closeModal}
+                disabled={saving}
+              >
                 Fechar
               </button>
             </div>
 
-            <form className="form" onSubmit={submitCreate}>
-              <label>
-                Nome
+            <form className="users-form" onSubmit={submitCreate}>
+              <div className="form-field">
+                <label>Nome</label>
                 <input
-                  className="inp"
+                  className="form-control"
                   value={fName}
                   onChange={(e) => setFName(e.target.value)}
                   required
                   autoFocus
                 />
-              </label>
+              </div>
 
-              <label>
-                Placa
+              <div className="form-field">
+                <label>Placa</label>
                 <input
-                  className="inp"
+                  className="form-control"
                   type="text"
                   value={fEmail}
                   onChange={(e) => setFEmail(e.target.value)}
                   required
                   autoComplete="off"
                 />
-              </label>
+              </div>
 
-              <label>
-                Senha
+              <div className="form-field">
+                <label>Senha</label>
                 <input
-                  className="inp"
+                  className="form-control"
                   type="password"
                   value={fPass}
                   onChange={(e) => setFPass(e.target.value)}
                   required
                 />
-              </label>
+              </div>
 
-              {error && <div className="alert">{error}</div>}
+              {error && <div className="alert error-alert">{error}</div>}
 
-              <div className="row end gap">
+              <div className="row end gap users-modal-actions">
                 <button
-                  className="btn-ghost"
+                  className="btn btn-outline-light btn-sm"
                   type="button"
                   onClick={closeModal}
                   disabled={saving}
                 >
                   Cancelar
                 </button>
-                <button className="btn primary" type="submit" disabled={saving}>
+                <button
+                  className="btn btn-primary btn-sm"
+                  type="submit"
+                  disabled={saving}
+                >
                   {saving ? "Salvando..." : "Salvar"}
                 </button>
               </div>

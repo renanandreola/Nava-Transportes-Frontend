@@ -1,0 +1,225 @@
+/* ====== Layout geral da área do motorista ====== */
+
+.drv-shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  background: #020617; /* fundo dark */
+  color: #e5e7eb;
+}
+
+/* Aside / menu lateral */
+.drv-aside {
+  border-right: 1px solid rgba(30, 64, 175, 0.5);
+  background:
+    radial-gradient(circle at top, rgba(30, 64, 175, 0.35), transparent 55%),
+    radial-gradient(circle at bottom, rgba(8, 47, 73, 0.35), transparent 55%),
+    #020617;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Marca / logo */
+.drv-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 16px;
+  border-bottom: 1px solid rgba(30, 64, 175, 0.6);
+}
+
+.drv-logo-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #22c55e, #3b82f6);
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.4);
+}
+
+.drv-brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.drv-brand-text strong {
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 13px;
+}
+
+.drv-brand-text span {
+  color: #9ca3af;
+  font-size: 12px;
+}
+
+/* Navegação lateral */
+.drv-nav {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  gap: 4px;
+}
+
+.drv-nav-section {
+  padding: 8px 10px 4px;
+  color: #9ca3af;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.drv-nav-item {
+  padding: 9px 12px;
+  border-radius: 12px;
+  color: inherit;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  transition: background 0.15s, transform 0.03s, color 0.15s;
+}
+
+.drv-nav-item span:first-child {
+  width: 18px;
+  text-align: center;
+}
+
+.drv-nav-item:hover {
+  background: rgba(30, 64, 175, 0.35);
+}
+
+.drv-nav-item.active {
+  background: linear-gradient(135deg, #1d4ed8, #22c55e);
+  color: #f9fafb;
+  font-weight: 600;
+  box-shadow: 0 10px 30px rgba(30, 64, 175, 0.7);
+  transform: translateY(1px);
+}
+
+/* Rodapé do aside */
+.drv-aside-foot {
+  margin-top: auto;
+  padding: 12px 12px 14px;
+  border-top: 1px solid rgba(30, 64, 175, 0.6);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.drv-user {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 12px;
+}
+
+.drv-user-name {
+  font-weight: 500;
+}
+
+.drv-user-role {
+  color: #9ca3af;
+  font-size: 11px;
+}
+
+/* Botão de sair dentro do layout do motorista */
+.drv-shell .btn-ghost.drv-logout {
+  background: transparent;
+  border: 1px solid rgba(148, 163, 184, 0.6);
+  padding: 7px 10px;
+  border-radius: 999px;
+  cursor: pointer;
+  color: #e5e7eb;
+  font-size: 12px;
+}
+
+.drv-shell .btn-ghost.drv-logout:hover {
+  background: rgba(148, 163, 184, 0.16);
+}
+
+/* Main / cabeçalho / conteúdo */
+.drv-main {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.drv-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-bottom: 1px solid rgba(31, 41, 55, 0.9);
+  background: radial-gradient(circle at top left, #020617, #020617);
+}
+
+.drv-h-left h1 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.drv-header-sub {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+/* Conteúdo */
+.drv-content {
+  padding: 20px;
+}
+
+/* Responsivo */
+@media (max-width: 900px) {
+  .drv-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .drv-aside {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    padding-inline: 8px;
+  }
+
+  .drv-brand {
+    border-bottom: none;
+    padding: 10px 8px;
+  }
+
+  .drv-nav {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding: 0 6px;
+  }
+
+  .drv-nav-item {
+    white-space: nowrap;
+    padding-inline: 10px;
+  }
+
+  .drv-aside-foot {
+    margin-top: 0;
+    margin-left: auto;
+    border-top: none;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .drv-user {
+    display: none; /* se quiser, pode ocultar no mobile pra caber melhor */
+  }
+
+  .drv-header {
+    padding-inline: 14px;
+  }
+
+  .drv-content {
+    padding: 16px 12px;
+  }
+}

@@ -1,0 +1,290 @@
+/* ====== Layout base / reaproveita o tema do dashboard ====== */
+.admin-page {
+  min-height: 82vh;
+  padding: 32px 16px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+/* Card base (compatível com AdminDashboard) */
+.card {
+  background: rgba(15, 23, 42, 0.96);
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  box-shadow: 0 18px 50px rgba(15, 23, 42, 0.6);
+}
+
+/* Card principal da tela de usuários */
+.admin-main-card {
+  width: 100%;
+  /* max-width: 1120px; */
+  padding: 24px 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  color: #e5e7eb;
+}
+
+/* Cabeçalho do card */
+.card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid rgba(31, 41, 55, 0.9);
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+}
+
+.card-head.row {
+  align-items: center;
+}
+
+/* Tipografia utilitária (mesmo do dashboard) */
+.muted {
+  color: #9ca3af;
+  font-size: 13px;
+}
+
+h2 {
+  margin: 0 0 4px;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+/* Utilitários */
+.row {
+  display: flex;
+  align-items: center;
+}
+
+.gap {
+  gap: 10px;
+}
+
+.end {
+  justify-content: flex-end;
+}
+
+/* ====== Header de ações ====== */
+.users-actions {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+/* Campo de busca */
+.users-search-input {
+  min-width: 220px;
+  max-width: 260px;
+  background-color: #020617;
+  border-color: rgba(75, 85, 99, 0.9);
+  color: #e5e7eb;
+  font-size: 13px;
+}
+
+.users-search-input::placeholder {
+  color: #6b7280;
+}
+
+.users-search-input:focus {
+  background-color: #020617;
+  box-shadow: 0 0 0 0.15rem rgba(99, 102, 241, 0.45);
+}
+
+/* ====== Tabela ====== */
+.users-table-wrap {
+  margin-top: 8px;
+  padding: 12px 18px 16px;
+  background: #020617;
+  border-radius: 10px;
+}
+
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+/* Cabeçalho da tabela (ajusta estilo em cima do Bootstrap) */
+.users-table thead th {
+  font-weight: 500;
+  color: #9ca3af;
+  border-bottom: 1px solid rgba(55, 65, 81, 0.9);
+  background: #020617;
+}
+
+/* Linhas da tabela (similar ao dashboard) */
+.users-table tbody tr:nth-child(odd) {
+  background: rgba(15, 23, 42, 0.9);
+}
+
+.users-table tbody tr:nth-child(even) {
+  background: rgba(17, 24, 39, 0.95);
+}
+
+.users-table tbody tr:hover {
+  background: rgba(30, 64, 175, 0.25);
+}
+
+.users-table th,
+.users-table td {
+  padding: 8px 10px;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.users-table td {
+  color: #e5e7eb;
+}
+
+.users-center-cell {
+  text-align: center;
+}
+
+/* ====== Modal ====== */
+.admin-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 50;
+}
+
+.admin-modal-card {
+  width: 100%;
+  max-width: 420px;
+  background: #020617;
+  border-radius: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.5);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.85);
+  padding: 18px 18px 14px;
+  color: #e5e7eb;
+}
+
+/* pop-in suave */
+.pop {
+  animation: users-pop-in 0.16s ease-out;
+}
+
+@keyframes users-pop-in {
+  from {
+    transform: scale(0.97) translateY(4px);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.modal-head h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+/* Form do modal */
+.users-form {
+  display: grid;
+  gap: 12px;
+}
+
+.form-field {
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.form-field label {
+  color: #e5e7eb;
+}
+
+/* Inputs dentro do modal (em cima do .form-control do Bootstrap) */
+.users-form .form-control {
+  background-color: #020617;
+  border-color: rgba(75, 85, 99, 0.9);
+  color: #e5e7eb;
+  font-size: 13px;
+}
+
+.users-form .form-control::placeholder {
+  color: #6b7280;
+}
+
+.users-form .form-control:focus {
+  background-color: #020617;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 0.15rem rgba(99, 102, 241, 0.45);
+}
+
+/* Linha de botões no modal */
+.users-modal-actions {
+  margin-top: 4px;
+}
+
+/* Alert de erro (reutiliza padrão dark + Bootstrap .alert) */
+.error-alert {
+  background: rgba(248, 113, 113, 0.1);
+  border: 1px solid rgba(248, 113, 113, 0.7);
+  color: #fecaca;
+  border-radius: 10px;
+  padding: 8px 10px;
+  font-size: 13px;
+}
+
+/* ====== Responsivo ====== */
+@media (max-width: 900px) {
+  .admin-main-card {
+    padding: 20px 16px 16px;
+  }
+
+  .card-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .users-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 640px) {
+  .admin-page {
+    padding: 20px 10px;
+  }
+
+  .users-table-wrap {
+    padding: 10px;
+    border-radius: 10px;
+    overflow-x: auto;
+  }
+
+  .users-table {
+    min-width: 520px;
+  }
+
+  .admin-modal-card {
+    max-width: 100%;
+  }
+}
+
+/* Acessibilidade: redução de animações */
+@media (prefers-reduced-motion: reduce) {
+  .users-table tbody tr:hover,
+  .pop {
+    transition: none !important;
+    animation: none !important;
+  }
+}

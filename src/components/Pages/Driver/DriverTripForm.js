@@ -1,11 +1,11 @@
 import React, { useMemo, useState, useEffect } from "react";
 import api from "../../../services/api";
-import "./driver.css";
+import "./DriverTripForm.css";
 
 // util
 const n = (v) => (isNaN(Number(v)) ? 0 : Number(v));
 const brCurrency = (v) =>
-  (n(v)).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  n(v).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
 export default function DriverTripForm() {
   const [me, setMe] = useState(null);
@@ -23,23 +23,43 @@ export default function DriverTripForm() {
   const [extras, setExtras] = useState([{ descricao: "", valor: 0 }]);
 
   // trechos (linhas)
-  const [rows, setRows] = useState([{
-    data: new Date().toISOString().slice(0,10),
-    origem: "", destino: "",
-    frete: 0, adiantamento: 0, saldo: 0,
-    kmInicial: 0, kmFinal: 0,
-    posto: "", litros: 0, mediaTrecho: 0,
-    assinador: "", pago: false,
-  }]);
+  const [rows, setRows] = useState([
+    {
+      data: new Date().toISOString().slice(0, 10),
+      origem: "",
+      destino: "",
+      frete: 0,
+      adiantamento: 0,
+      saldo: 0,
+      kmInicial: 0,
+      kmFinal: 0,
+      posto: "",
+      litros: 0,
+      mediaTrecho: 0,
+      assinador: "",
+      pago: false,
+    },
+  ]);
 
-  const addRow = () => setRows((r) => [...r, {
-    data: new Date().toISOString().slice(0,10),
-    origem: "", destino: "",
-    frete: 0, adiantamento: 0, saldo: 0,
-    kmInicial: 0, kmFinal: 0,
-    posto: "", litros: 0, mediaTrecho: 0,
-    assinador: "", pago: false,
-  }]);
+  const addRow = () =>
+    setRows((r) => [
+      ...r,
+      {
+        data: new Date().toISOString().slice(0, 10),
+        origem: "",
+        destino: "",
+        frete: 0,
+        adiantamento: 0,
+        saldo: 0,
+        kmInicial: 0,
+        kmFinal: 0,
+        posto: "",
+        litros: 0,
+        mediaTrecho: 0,
+        assinador: "",
+        pago: false,
+      },
+    ]);
 
   const rmRow = (idx) => setRows((r) => r.filter((_, i) => i !== idx));
 
@@ -49,7 +69,8 @@ export default function DriverTripForm() {
       const item = { ...clone[idx], [field]: value };
       // cálculos por linha
       const kmPerc = n(item.kmFinal) - n(item.kmInicial);
-      item.mediaTrecho = n(item.litros) > 0 ? +(kmPerc / n(item.litros)).toFixed(2) : 0;
+      item.mediaTrecho =
+        n(item.litros) > 0 ? +(kmPerc / n(item.litros)).toFixed(2) : 0;
       item.saldo = +(n(item.frete) - n(item.adiantamento)).toFixed(2);
       clone[idx] = item;
       return clone;
@@ -57,16 +78,34 @@ export default function DriverTripForm() {
   };
 
   // agregados
-  const kmInicial = useMemo(() => (rows.length ? n(rows[0].kmInicial) : 0), [rows]);
-  const kmFinal   = useMemo(() => (rows.length ? n(rows[rows.length-1].kmFinal) : 0), [rows]);
-  const litrosTotal = useMemo(() => rows.reduce((s, r) => s + n(r.litros), 0), [rows]);
-  const mediaGeral  = useMemo(() => {
-    const totalKm = rows.reduce((s, r) => s + (n(r.kmFinal)-n(r.kmInicial)), 0);
+  const kmInicial = useMemo(
+    () => (rows.length ? n(rows[0].kmInicial) : 0),
+    [rows]
+  );
+  const kmFinal = useMemo(
+    () => (rows.length ? n(rows[rows.length - 1].kmFinal) : 0),
+    [rows]
+  );
+  const litrosTotal = useMemo(
+    () => rows.reduce((s, r) => s + n(r.litros), 0),
+    [rows]
+  );
+  const mediaGeral = useMemo(() => {
+    const totalKm = rows.reduce(
+      (s, r) => s + (n(r.kmFinal) - n(r.kmInicial)),
+      0
+    );
     return litrosTotal > 0 ? +(totalKm / litrosTotal).toFixed(2) : 0;
   }, [rows, litrosTotal]);
 
-  const totalFreteLinhas = useMemo(() => rows.reduce((s, r) => s + n(r.frete), 0), [rows]);
-  const totalAdiantado   = useMemo(() => rows.reduce((s, r) => s + n(r.adiantamento), 0), [rows]);
+  const totalFreteLinhas = useMemo(
+    () => rows.reduce((s, r) => s + n(r.frete), 0),
+    [rows]
+  );
+  const totalAdiantado = useMemo(
+    () => rows.reduce((s, r) => s + n(r.adiantamento), 0),
+    [rows]
+  );
 
   // carrega /auth/me para mostrar o motorista
   useEffect(() => {
@@ -84,7 +123,8 @@ export default function DriverTripForm() {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    setErr(""); setOk("");
+    setErr("");
+    setOk("");
     setSaving(true);
     try {
       const payload = {
@@ -92,17 +132,21 @@ export default function DriverTripForm() {
         driverName: me?.name,
         plate,
 
-        kmInicial, kmFinal,
-        litrosTotal, mediaGeral,
+        kmInicial,
+        kmFinal,
+        litrosTotal,
+        mediaGeral,
 
         totalAssinado: n(totalAssinado),
         totalPago: n(totalPago),
         premiacao: n(premiacao),
         totalDoFrete: n(totalDoFrete) || totalFreteLinhas,
 
-        extras: extras.filter(x => (x.descricao || n(x.valor) > 0)).map(x => ({ descricao: x.descricao, valor: n(x.valor) })),
+        extras: extras
+          .filter((x) => x.descricao || n(x.valor) > 0)
+          .map((x) => ({ descricao: x.descricao, valor: n(x.valor) })),
 
-        trechos: rows.map(r => ({
+        trechos: rows.map((r) => ({
           ...r,
           frete: n(r.frete),
           adiantamento: n(r.adiantamento),
@@ -117,14 +161,23 @@ export default function DriverTripForm() {
       await api.post("/driver/trips", payload);
       setOk("Viagem cadastrada com sucesso.");
       // limpa só as linhas
-      setRows([{
-        data: new Date().toISOString().slice(0,10),
-        origem: "", destino: "",
-        frete: 0, adiantamento: 0, saldo: 0,
-        kmInicial: 0, kmFinal: 0,
-        posto: "", litros: 0, mediaTrecho: 0,
-        assinador: "", pago: false,
-      }]);
+      setRows([
+        {
+          data: new Date().toISOString().slice(0, 10),
+          origem: "",
+          destino: "",
+          frete: 0,
+          adiantamento: 0,
+          saldo: 0,
+          kmInicial: 0,
+          kmFinal: 0,
+          posto: "",
+          litros: 0,
+          mediaTrecho: 0,
+          assinador: "",
+          pago: false,
+        },
+      ]);
     } catch (e2) {
       setErr(e2?.response?.data?.message || "Erro ao salvar");
     } finally {
@@ -133,113 +186,299 @@ export default function DriverTripForm() {
   };
 
   return (
-    <div className="card">
-      <div className="card-head">
-        <h2>Controle de Saída de Veículo</h2>
-        <p className="muted">
-          Motorista: <b>{me?.name || "-"}</b> • Perfil: <b>{me?.role || "-"}</b>
-        </p>
-      </div>
-
-      <form className="form" onSubmit={onSubmit}>
-        <div className="row gap">
-          <label style={{flex:1}}>Placa
-            <input className="inp" value={plate} onChange={(e)=>setPlate(e.target.value)} placeholder="ABC-1D23" />
-          </label>
-
-          <label>KM Inicial (geral)
-            <input className="inp" type="number" value={kmInicial} readOnly />
-          </label>
-          <label>KM Final (geral)
-            <input className="inp" type="number" value={kmFinal} readOnly />
-          </label>
-          <label>Litros total
-            <input className="inp" type="number" value={litrosTotal} readOnly />
-          </label>
-          <label>Média geral (km/l)
-            <input className="inp" type="number" value={mediaGeral} readOnly />
-          </label>
+    <div className="driver-page driver-trip-form-page">
+      <div className="card driver-card driver-trip-form-card">
+        <div className="driver-trip-header">
+          <div>
+            <h2>Controle de Saída de Veículo</h2>
+            <p className="muted">
+              Motorista: <b>{me?.name || "-"}</b> • Perfil:{" "}
+              <b>{me?.role || "-"}</b>
+            </p>
+          </div>
         </div>
 
-        <div className="table-wrap">
-          <table className="table">
-            <thead>
-              <tr>
-                <th style={{minWidth:120}}>Data</th>
-                <th>Origem</th>
-                <th>Destino</th>
-                <th>Frete (R$)</th>
-                <th>Adiant. (R$)</th>
-                <th>Saldo (R$)</th>
-                <th>KM Ini</th>
-                <th>KM Fin</th>
-                <th>Posto</th>
-                <th>Litros</th>
-                <th>Média</th>
-                <th>Assinador</th>
-                <th>Pago?</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((r, i) => (
-                <tr key={i}>
-                  <td><input className="inp" type="date" value={r.data} onChange={e=>setRow(i,"data",e.target.value)} /></td>
-                  <td><input className="inp" value={r.origem} onChange={e=>setRow(i,"origem",e.target.value)} /></td>
-                  <td><input className="inp" value={r.destino} onChange={e=>setRow(i,"destino",e.target.value)} /></td>
-                  <td><input className="inp" type="number" step="0.01" value={r.frete} onChange={e=>setRow(i,"frete",e.target.value)} /></td>
-                  <td><input className="inp" type="number" step="0.01" value={r.adiantamento} onChange={e=>setRow(i,"adiantamento",e.target.value)} /></td>
-                  <td><input className="inp" type="number" step="0.01" value={r.saldo} onChange={e=>setRow(i,"saldo",e.target.value)} /></td>
-                  <td><input className="inp" type="number" value={r.kmInicial} onChange={e=>setRow(i,"kmInicial",e.target.value)} /></td>
-                  <td><input className="inp" type="number" value={r.kmFinal} onChange={e=>setRow(i,"kmFinal",e.target.value)} /></td>
-                  <td><input className="inp" value={r.posto} onChange={e=>setRow(i,"posto",e.target.value)} /></td>
-                  <td><input className="inp" type="number" step="0.01" value={r.litros} onChange={e=>setRow(i,"litros",e.target.value)} /></td>
-                  <td><input className="inp" type="number" step="0.01" value={r.mediaTrecho} readOnly /></td>
-                  <td><input className="inp" value={r.assinador} onChange={e=>setRow(i,"assinador",e.target.value)} /></td>
-                  <td style={{textAlign:"center"}}>
-                    <input type="checkbox" checked={!!r.pago} onChange={e=>setRow(i,"pago",e.target.checked)} />
-                  </td>
-                  <td>
-                    {rows.length > 1 && (
-                      <button type="button" className="btn-ghost" onClick={()=>rmRow(i)}>Remover</button>
-                    )}
-                  </td>
+        <form className="form driver-trip-form" onSubmit={onSubmit}>
+          {/* Cabeçalho de resumo */}
+          <div className="driver-trip-summary-row">
+            <label className="driver-field-grow">
+              <span>Placa</span>
+              <input
+                className="inp"
+                value={plate}
+                onChange={(e) => setPlate(e.target.value)}
+                placeholder="ABC-1D23"
+              />
+            </label>
+
+            <label>
+              <span>KM Inicial (geral)</span>
+              <input
+                className="inp"
+                type="number"
+                value={kmInicial}
+                readOnly
+              />
+            </label>
+            <label>
+              <span>KM Final (geral)</span>
+              <input className="inp" type="number" value={kmFinal} readOnly />
+            </label>
+            <label>
+              <span>Litros total</span>
+              <input
+                className="inp"
+                type="number"
+                value={litrosTotal}
+                readOnly
+              />
+            </label>
+            <label>
+              <span>Média geral (km/l)</span>
+              <input
+                className="inp"
+                type="number"
+                value={mediaGeral}
+                readOnly
+              />
+            </label>
+          </div>
+
+          {/* Tabela de trechos */}
+          <div className="driver-trip-form-table-wrap">
+            <table className="table driver-trip-form-table">
+              <thead>
+                <tr>
+                  <th style={{ minWidth: 120 }}>Data</th>
+                  <th>Origem</th>
+                  <th>Destino</th>
+                  <th>Frete (R$)</th>
+                  <th>Adiant. (R$)</th>
+                  <th>Saldo (R$)</th>
+                  <th>KM Ini</th>
+                  <th>KM Fin</th>
+                  <th>Posto</th>
+                  <th>Litros</th>
+                  <th>Média</th>
+                  <th>Assinador</th>
+                  <th>Pago?</th>
+                  <th></th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {rows.map((r, i) => (
+                  <tr key={i}>
+                    <td>
+                      <input
+                        className="inp"
+                        type="date"
+                        value={r.data}
+                        onChange={(e) => setRow(i, "data", e.target.value)}
+                      />
+                    </td>
+                    <td>
+                      <input
+                        className="inp"
+                        value={r.origem}
+                        onChange={(e) => setRow(i, "origem", e.target.value)}
+                      />
+                    </td>
+                    <td>
+                      <input
+                        className="inp"
+                        value={r.destino}
+                        onChange={(e) => setRow(i, "destino", e.target.value)}
+                      />
+                    </td>
+                    <td>
+                      <input
+                        className="inp"
+                        type="number"
+                        step="0.01"
+                        value={r.frete}
+                        onChange={(e) => setRow(i, "frete", e.target.value)}
+                      />
+                    </td>
+                    <td>
+                      <input
+                        className="inp"
+                        type="number"
+                        step="0.01"
+                        value={r.adiantamento}
+                        onChange={(e) =>
+                          setRow(i, "adiantamento", e.target.value)
+                        }
+                      />
+                    </td>
+                    <td>
+                      <input
+                        className="inp"
+                        type="number"
+                        step="0.01"
+                        value={r.saldo}
+                        onChange={(e) => setRow(i, "saldo", e.target.value)}
+                      />
+                    </td>
+                    <td>
+                      <input
+                        className="inp"
+                        type="number"
+                        value={r.kmInicial}
+                        onChange={(e) =>
+                          setRow(i, "kmInicial", e.target.value)
+                        }
+                      />
+                    </td>
+                    <td>
+                      <input
+                        className="inp"
+                        type="number"
+                        value={r.kmFinal}
+                        onChange={(e) => setRow(i, "kmFinal", e.target.value)}
+                      />
+                    </td>
+                    <td>
+                      <input
+                        className="inp"
+                        value={r.posto}
+                        onChange={(e) => setRow(i, "posto", e.target.value)}
+                      />
+                    </td>
+                    <td>
+                      <input
+                        className="inp"
+                        type="number"
+                        step="0.01"
+                        value={r.litros}
+                        onChange={(e) => setRow(i, "litros", e.target.value)}
+                      />
+                    </td>
+                    <td>
+                      <input
+                        className="inp"
+                        type="number"
+                        step="0.01"
+                        value={r.mediaTrecho}
+                        readOnly
+                      />
+                    </td>
+                    <td>
+                      <input
+                        className="inp"
+                        value={r.assinador}
+                        onChange={(e) =>
+                          setRow(i, "assinador", e.target.value)
+                        }
+                      />
+                    </td>
+                    <td style={{ textAlign: "center" }}>
+                      <input
+                        type="checkbox"
+                        checked={!!r.pago}
+                        onChange={(e) => setRow(i, "pago", e.target.checked)}
+                      />
+                    </td>
+                    <td>
+                      {rows.length > 1 && (
+                        <button
+                          type="button"
+                          className="btn-ghost driver-row-remove"
+                          onClick={() => rmRow(i)}
+                        >
+                          Remover
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
-        <div className="row gap" style={{marginTop:12}}>
-          <button type="button" className="btn" onClick={addRow}>+ Adicionar trecho</button>
-          <div className="muted">Total frete (linhas): <b>{brCurrency(totalFreteLinhas)}</b> • Adiantado: <b>{brCurrency(totalAdiantado)}</b></div>
-        </div>
+          {/* Totais por linhas */}
+          <div className="row gap driver-trip-lines-summary">
+            <button
+              type="button"
+              className="btn btn-secondary btn-sm"
+              onClick={addRow}
+            >
+              + Adicionar trecho
+            </button>
+            <div className="muted">
+              Total frete (linhas):{" "}
+              <b>{brCurrency(totalFreteLinhas)}</b> • Adiantado:{" "}
+              <b>{brCurrency(totalAdiantado)}</b>
+            </div>
+          </div>
 
-        <hr style={{border:'none', borderTop:'1px solid var(--line)', margin:'14px 0'}} />
+          <hr className="driver-trip-separator" />
 
-        <div className="row gap">
-          <label>Premiação
-            <input className="inp" type="number" step="0.01" value={premiacao} onChange={e=>setPremiacao(e.target.value)} />
-          </label>
-          <label>Total Assinado
-            <input className="inp" type="number" step="0.01" value={totalAssinado} onChange={e=>setTotalAssinado(e.target.value)} />
-          </label>
-          <label>Total Pago
-            <input className="inp" type="number" step="0.01" value={totalPago} onChange={e=>setTotalPago(e.target.value)} />
-          </label>
-          <label>Total do Frete
-            <input className="inp" type="number" step="0.01" value={totalDoFrete} onChange={e=>setTotalDoFrete(e.target.value)} />
-          </label>
-        </div>
+          {/* Totais finais */}
+          <div className="row gap driver-trip-totals">
+            <label>
+              <span>Premiação</span>
+              <input
+                className="inp"
+                type="number"
+                step="0.01"
+                value={premiacao}
+                onChange={(e) => setPremiacao(e.target.value)}
+              />
+            </label>
+            <label>
+              <span>Total Assinado</span>
+              <input
+                className="inp"
+                type="number"
+                step="0.01"
+                value={totalAssinado}
+                onChange={(e) => setTotalAssinado(e.target.value)}
+              />
+            </label>
+            <label>
+              <span>Total Pago</span>
+              <input
+                className="inp"
+                type="number"
+                step="0.01"
+                value={totalPago}
+                onChange={(e) => setTotalPago(e.target.value)}
+              />
+            </label>
+            <label>
+              <span>Total do Frete</span>
+              <input
+                className="inp"
+                type="number"
+                step="0.01"
+                value={totalDoFrete}
+                onChange={(e) => setTotalDoFrete(e.target.value)}
+              />
+            </label>
+          </div>
 
-        {err && <div className="alert">{err}</div>}
-        {ok && <div className="alert" style={{background:'#e7f9ed', borderColor:'#bbf7d0', color:'#166534'}}>{ok}</div>}
+          {err && <div className="alert error-alert">{err}</div>}
+          {ok && <div className="alert success-alert">{ok}</div>}
 
-        <div className="row end gap">
-          <button className="btn-ghost" type="button" onClick={()=>window.history.back()}>Cancelar</button>
-          <button className="btn primary" type="submit" disabled={saving}>{saving ? "Salvando..." : "Salvar"}</button>
-        </div>
-      </form>
+          <div className="row end gap driver-trip-actions">
+            <button
+              className="btn-ghost"
+              type="button"
+              onClick={() => window.history.back()}
+              disabled={saving}
+            >
+              Cancelar
+            </button>
+            <button
+              className="btn btn-primary"
+              type="submit"
+              disabled={saving}
+            >
+              {saving ? "Salvando..." : "Salvar"}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

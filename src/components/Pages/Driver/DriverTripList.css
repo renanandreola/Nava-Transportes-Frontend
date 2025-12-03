@@ -1,0 +1,92 @@
+/* ====== Lista de viagens do motorista ====== */
+
+/* Wrapper leve: apenas para ajustar dentro do layout */
+.driver-trip-list-page {
+  width: 100%;
+}
+
+/* Podemos reutilizar .driver-card do home; se quiser algo maior: */
+.driver-trip-list-page .driver-card {
+  /* max-width: 960px; */
+  padding: 25px;
+}
+
+/* Cabeçalho da lista */
+.driver-trip-head {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border-bottom: 1px solid rgba(31, 41, 55, 0.9);
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+}
+
+.driver-trip-head h2 {
+  margin: 0 0 4px;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.driver-trip-empty {
+  margin: 0;
+  padding: 8px 0;
+  font-size: 13px;
+}
+
+/* Wrapper da tabela (scroll horizontal no mobile) */
+.driver-trip-table-wrap {
+  margin-top: 4px;
+  padding: 10px 0 2px;
+  border-radius: 10px;
+  overflow-x: auto;
+}
+
+/* Tabela em cima do Bootstrap */
+.driver-trip-table {
+  min-width: 600px;
+  font-size: 13px;
+}
+
+.driver-trip-table thead th {
+  font-weight: 500;
+  color: #9ca3af;
+  border-bottom: 1px solid rgba(55, 65, 81, 0.9);
+  background: #020617;
+}
+
+/* Linhas da tabela (zebra dark) */
+.driver-trip-table tbody tr:nth-child(odd) {
+  background: rgba(15, 23, 42, 0.9);
+}
+
+.driver-trip-table tbody tr:nth-child(even) {
+  background: rgba(17, 24, 39, 0.95);
+}
+
+.driver-trip-table tbody tr:hover {
+  background: rgba(30, 64, 175, 0.25);
+}
+
+.driver-trip-table th,
+.driver-trip-table td {
+  padding: 8px 10px;
+  white-space: nowrap;
+}
+
+.driver-trip-table td {
+  color: #e5e7eb;
+}
+
+/* Responsivo */
+@media (max-width: 640px) {
+  .driver-trip-table {
+    min-width: 520px;
+  }
+}
+
+/* Acessibilidade */
+@media (prefers-reduced-motion: reduce) {
+  .driver-trip-table tbody tr:hover {
+    transition: none !important;
+  }
+}

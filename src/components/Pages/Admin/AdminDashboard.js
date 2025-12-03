@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import api from "../../../services/api";
+import "./AdminDashboard.css";
 
 export default function AdminDashboard() {
   const [me, setMe] = useState(null);
@@ -53,92 +54,110 @@ export default function AdminDashboard() {
   }, []);
 
   return (
-    <div className="card">
-      <div className="card-head row">
-        <div>
-          <h2>Visão geral</h2>
-          <p className="muted">
-            {me ? (
-              <>Bem-vindo, <strong>{me.name}</strong> — perfil <b>{me.role}</b>.</>
-            ) : (
-              <>Bem-vindo ao painel administrativo.</>
-            )}
-          </p>
-        </div>
-        <div className="row gap">
-          <button className="btn" type="button" onClick={fetchAll} disabled={loading}>
-            {loading ? "Atualizando..." : "Atualizar"}
-          </button>
-        </div>
-      </div>
-
-      {err && (
-        <div className="alert" style={{ marginBottom: 12 }}>
-          {err}
-        </div>
-      )}
-
-      {/* KPIs */}
-      <div className="grid-3" style={{ marginBottom: 16 }}>
-        <div className="stat">
-          <div className="stat-num">{loading ? "—" : totalDrivers}</div>
-          <div className="stat-label">Motoristas ativos (role: driver)</div>
-        </div>
-        <div className="stat">
-          <div className="stat-num">{loading ? "—" : totalAdmins}</div>
-          <div className="stat-label">Administradores</div>
-        </div>
-        <div className="stat">
-          <div className="stat-num">{loading ? "—" : totalUsers}</div>
-          <div className="stat-label">Total de usuários</div>
-        </div>
-      </div>
-
-      {/* Últimos cadastrados */}
-      <div className="card" style={{ padding: 0 }}>
-        <div className="card-head" style={{ margin: 0, padding: "12px 16px" }}>
+    <div className="admin-page">
+      <div className="card admin-main-card">
+        <div className="card-head row">
           <div>
-            <h3 style={{ margin: 0 }}>Últimos cadastrados</h3>
-            <p className="muted" style={{ margin: 0 }}>
-              Mostrando até 5 mais recentes
+            <h2>Visão geral</h2>
+            <p className="muted">
+              {me ? (
+                <>
+                  Bem-vindo, <strong>{me.name}</strong> — perfil{" "}
+                  <b>{me.role}</b>.
+                </>
+              ) : (
+                <>Bem-vindo ao painel administrativo.</>
+              )}
             </p>
           </div>
+          <div className="row gap">
+            <button
+              className="btn btn-primary dashboard-refresh-btn"
+              type="button"
+              onClick={fetchAll}
+              disabled={loading}
+            >
+              {loading ? "Atualizando..." : "Atualizar"}
+            </button>
+          </div>
         </div>
-        <div className="table-wrap" style={{ padding: 16 }}>
-          <table className="table">
-            <thead>
-              <tr>
-                <th>Nome</th>
-                <th>E-mail</th>
-                <th>Função</th>
-                <th>Criado em</th>
-              </tr>
-            </thead>
-            <tbody>
-              {!loading && latest.length === 0 && (
+
+        {err && (
+          <div className="alert error-alert" style={{ marginBottom: 12 }}>
+            {err}
+          </div>
+        )}
+
+        {/* KPIs */}
+        <div className="dashboard-grid">
+          <div className="dashboard-stat">
+            <div className="dashboard-stat-label">
+              Motoristas ativos (role: driver)
+            </div>
+            <div className="dashboard-stat-num">
+              {loading ? "—" : totalDrivers}
+            </div>
+          </div>
+          <div className="dashboard-stat">
+            <div className="dashboard-stat-label">Administradores</div>
+            <div className="dashboard-stat-num">
+              {loading ? "—" : totalAdmins}
+            </div>
+          </div>
+          <div className="dashboard-stat">
+            <div className="dashboard-stat-label">Total de usuários</div>
+            <div className="dashboard-stat-num">
+              {loading ? "—" : totalUsers}
+            </div>
+          </div>
+        </div>
+
+        {/* Últimos cadastrados */}
+        <div className="card dashboard-sub-card">
+          <div className="card-head dashboard-sub-head">
+            <div>
+              <h3 className="dashboard-sub-title">Últimos cadastrados</h3>
+              <p className="muted">
+                Mostrando até 5 usuários cadastrados mais recentemente
+              </p>
+            </div>
+          </div>
+          <div className="dashboard-table-wrap">
+            <table className="table table-striped dashboard-table">
+              <thead>
                 <tr>
-                  <td colSpan="4" className="muted">
-                    Nenhum usuário cadastrado ainda.
-                  </td>
+                  <th>Nome</th>
+                  <th>E-mail</th>
+                  <th>Função</th>
+                  <th>Criado em</th>
                 </tr>
-              )}
-              {latest.map((u) => (
-                <tr key={u._id}>
-                  <td>{u.name || "-"}</td>
-                  <td>{u.email || "-"}</td>
-                  <td>{u.role || "-"}</td>
-                  <td>{formatDateTime(u.createdAt)}</td>
-                </tr>
-              ))}
-              {loading && (
-                <tr>
-                  <td colSpan="4" className="muted">
-                    Carregando…
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {!loading && latest.length === 0 && (
+                  <tr>
+                    <td colSpan="4" className="muted dashboard-center-cell">
+                      Nenhum usuário cadastrado ainda.
+                    </td>
+                  </tr>
+                )}
+                {latest.map((u) => (
+                  <tr key={u._id}>
+                    <td>{u.name || "-"}</td>
+                    <td>{u.email || "-"}</td>
+                    <td>{u.role || "-"}</td>
+                    <td>{formatDateTime(u.createdAt)}</td>
+                  </tr>
+                ))}
+                {loading && (
+                  <tr>
+                    <td colSpan="4" className="muted dashboard-center-cell">
+                      Carregando…
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>

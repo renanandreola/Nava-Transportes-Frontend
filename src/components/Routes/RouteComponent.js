@@ -8,6 +8,7 @@ import RequireRole from "./RequireRole";
 import AdminLayout from "../Pages/Admin/AdminLayout";
 import AdminDashboard from "../Pages/Admin/AdminDashboard";
 import AdminUsers from "../Pages/Admin/AdminUsers";
+import DriverLayout from "../Pages/Driver/DriverLayout";
 import DriverHome from "../Pages/Driver/DriverHome";
 import DriverTripForm from "../Pages/Driver/DriverTripForm";
 import DriverTripList from "../Pages/Driver/DriverTripList";
@@ -23,14 +24,11 @@ function RouteComponent() {
         <Route path="/home" element={<Navigate to="/driver" replace />} />
 
         {/* Área Driver (usuário comum) */}
-        <Route
-          path="/driver"
-          element={
-            <RequireRole role="driver">
-              <DriverHome />
-            </RequireRole>
-          }
-        />
+        <Route path="/driver" element={<DriverLayout />}>
+          <Route index element={<DriverHome />} />
+          <Route path="trips/new" element={<DriverTripForm />} />
+          <Route path="trips" element={<DriverTripList />} />
+        </Route>
 
         {/* Área Admin */}
         <Route
@@ -44,15 +42,6 @@ function RouteComponent() {
           <Route index element={<AdminDashboard />} />
           <Route path="users" element={<AdminUsers />} />
         </Route>
-
-        <Route
-          path="/driver"
-          element={
-            <RequireRole role="driver">
-              <DriverHome />   {/* pode manter */}
-            </RequireRole>
-          }
-        />
 
         <Route
           path="/driver/trips/new"

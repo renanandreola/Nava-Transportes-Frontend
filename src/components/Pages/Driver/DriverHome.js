@@ -1,35 +1,59 @@
 import React from "react";
-import "./driver.css";
-import api from "../../../services/api";
 import { useNavigate } from "react-router-dom";
+import api from "../../../services/api";
+import "./DriverHome.css";
 
 export default function DriverHome() {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    const logout = async () => {
-      await api.post("/auth/logout");
-      navigate("/", { replace: true });
-    };
-    
+  const logout = async () => {
+    await api.post("/auth/logout");
+    navigate("/", { replace: true });
+  };
+
   return (
-    <div className="card">
-      <div className="card-head">
-        <h2>Área do Motorista</h2>
-        <p className="muted">Bem-vindo! Aqui ficarão seus recursos operacionais.</p>
-        <button className="btn-ghost" onClick={logout}>Sair</button>
-      </div>
+    <div className="driver-page">
+      <div className="card driver-card">
+        <div className="driver-card-head">
+          <div>
+            <h2>Área do Motorista</h2>
+            <p className="muted">
+              Bem-vindo! Aqui ficarão seus recursos operacionais.
+            </p>
+          </div>
+          <button
+            className="btn btn-outline-light btn-sm driver-logout-btn"
+            type="button"
+            onClick={logout}
+          >
+            Sair
+          </button>
+        </div>
 
-      <div style={{ padding: 8 }}>
-        <button className="btn primary" onClick={() => navigate("/driver/trips/new")}>
-          Novo Controle de Saída
-        </button>
+        <div className="driver-card-body">
+          <p className="driver-helper">
+            Escolha uma opção abaixo para iniciar um novo controle de saída ou
+            consultar suas viagens.
+          </p>
 
-        <button
-          className="btn"
-          onClick={() => navigate("/driver/trips")}
-        >
-          Minhas Viagens
-        </button>
+          <div className="driver-actions">
+            <button
+              type="button"
+              className="btn btn-primary driver-main-btn"
+              onClick={() => navigate("/driver/trips/new")}
+            >
+              Novo Controle de Saída
+            </button>
+
+            <button
+              type="button"
+              className="btn btn-info driver-secondary-btn"
+              onClick={() => navigate("/driver/trips")}
+            >
+              Minhas Viagens
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
