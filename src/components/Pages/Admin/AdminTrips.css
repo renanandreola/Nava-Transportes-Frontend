@@ -1,0 +1,83 @@
+/* ====== Tela de Controles de Saída (Admin) ====== */
+
+.admin-trips-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Filtros */
+.admin-trips-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.filters-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+}
+
+.filter-field label {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.filter-grow {
+  flex: 1;
+  min-width: 200px;
+}
+
+.filters-actions {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+/* Tabela */
+.admin-trips-table-wrap {
+  margin-top: 4px;
+}
+
+.admin-trips-table {
+  font-size: 13px;
+}
+
+.admin-trips-table th,
+.admin-trips-table td {
+  padding: 8px 10px;
+}
+
+.admin-trips-table thead th {
+  white-space: nowrap;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .filters-row {
+    flex-direction: column;
+  }
+
+  .filters-actions {
+    align-items: stretch;
+    justify-content: flex-start;
+  }
+
+  .filters-actions .btn,
+  .filters-actions .btn.primary {
+    width: 100%;
+  }
+
+  .admin-trips-table {
+    min-width: 720px;
+  }
+}

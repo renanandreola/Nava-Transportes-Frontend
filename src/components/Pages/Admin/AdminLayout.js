@@ -18,26 +18,29 @@ export default function AdminLayout() {
           <div className="logo-dot" />
           <div className="brand-text">
             <strong>NAVA</strong>
-            <span>Admin panel</span>
+            <span>Admin</span>
           </div>
         </div>
 
-        <nav className="adm-nav" aria-label="Navegação administrativa">
+        <nav className="adm-nav">
           <NavLink end to="/admin" className="nav-item">
-            <span className="nav-icon">📊</span>
-            <span className="nav-label">Dashboard</span>
+            <span>📊</span> Dashboard
           </NavLink>
 
           <div className="nav-section">Gestão</div>
 
           <NavLink to="/admin/users" className="nav-item">
-            <span className="nav-icon">👤</span>
-            <span className="nav-label">Motoristas</span>
+            <span>👤</span> Usuários (Motoristas)
+          </NavLink>
+
+          {/* NOVA ABA: controles de saída / viagens dos motoristas */}
+          <NavLink to="/admin/trips" className="nav-item">
+            <span>🚚</span> Controles de Saída
           </NavLink>
         </nav>
 
         <div className="adm-aside-foot">
-          <button className="btn-ghost" type="button" onClick={logout}>
+          <button className="btn-ghost" onClick={logout}>
             Sair
           </button>
         </div>
@@ -47,11 +50,8 @@ export default function AdminLayout() {
         <header className="adm-header">
           <div className="h-left">
             <h1>Área Administrativa</h1>
-            <p className="muted">Gerencie motoristas, acessos e operações.</p>
           </div>
-          <div className="h-right">
-            {/* espaço para busca/ações futuras */}
-          </div>
+          <div className="h-right">{/* espaço para busca/ações */}</div>
         </header>
 
         <section className="adm-content">

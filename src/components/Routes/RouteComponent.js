@@ -8,6 +8,7 @@ import RequireRole from "./RequireRole";
 import AdminLayout from "../Pages/Admin/AdminLayout";
 import AdminDashboard from "../Pages/Admin/AdminDashboard";
 import AdminUsers from "../Pages/Admin/AdminUsers";
+import AdminTrips from "../Pages/Admin/AdminTrips";
 import DriverLayout from "../Pages/Driver/DriverLayout";
 import DriverHome from "../Pages/Driver/DriverHome";
 import DriverTripForm from "../Pages/Driver/DriverTripForm";
@@ -41,6 +42,7 @@ function RouteComponent() {
         >
           <Route index element={<AdminDashboard />} />
           <Route path="users" element={<AdminUsers />} />
+          <Route path="trips" element={<AdminTrips />} />
         </Route>
 
         <Route
