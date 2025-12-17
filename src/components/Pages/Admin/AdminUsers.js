@@ -6,13 +6,16 @@ export default function AdminUsers() {
   const [list, setList] = useState([]);
   const [q, setQ] = useState("");
   const [loading, setLoading] = useState(true);
+
   const [open, setOpen] = useState(false);
   const [allowBackdropClose, setAllowBackdropClose] = useState(false);
+
   const [fName, setFName] = useState("");
   const [fEmail, setFEmail] = useState("");
   const [fPass, setFPass] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [editingUser, setEditingUser] = useState(null); // <- novo
 
   const fetchData = async () => {
     setLoading(true);
@@ -31,14 +34,26 @@ export default function AdminUsers() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const openModal = () => {
+  const openCreateModal = () => {
     setError("");
+    setEditingUser(null);         // modo criação
     setFName("");
     setFEmail("");
     setFPass("");
     setOpen(true);
     setAllowBackdropClose(false);
 
+    setTimeout(() => setAllowBackdropClose(true), 150);
+  };
+
+  const openEditModal = (user) => {
+    setError("");
+    setEditingUser(user);         // modo edição
+    setFName(user.name || "");
+    setFEmail(user.email || "");
+    setFPass("");                 // senha em branco (opcional mudar)
+    setOpen(true);
+    setAllowBackdropClose(false);
     setTimeout(() => setAllowBackdropClose(true), 150);
   };
 
@@ -55,26 +70,63 @@ export default function AdminUsers() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, saving]);
 
-  const submitCreate = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (saving) return;
 
     setError("");
     setSaving(true);
+
     try {
-      await api.post("/admin/users", {
+      const payload = {
         name: fName.trim(),
         email: fEmail.trim(),
-        password: fPass,
         role: "driver",
         active: true,
-      });
+      };
+
+      // se tiver senha preenchida, manda também
+      if (fPass) {
+        payload.password = fPass;
+      }
+
+      if (editingUser && editingUser._id) {
+        // atualização
+        await api.put(`/admin/users/${editingUser._id}`, payload);
+      } else {
+        // criação
+        if (!payload.password) {
+          setError("Senha é obrigatória para novo usuário.");
+          setSaving(false);
+          return;
+        }
+        await api.post("/admin/users", payload);
+      }
+
       setOpen(false);
       await fetchData();
     } catch (err) {
-      setError(err?.response?.data?.message || "Erro ao criar");
+      setError(
+        err?.response?.data?.message || "Erro ao salvar usuário"
+      );
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleDelete = async (user) => {
+    const ok = window.confirm(
+      `Tem certeza que deseja excluir o usuário "${user.name}"?`
+    );
+    if (!ok) return;
+
+    try {
+      await api.delete(`/admin/users/${user._id}`);
+      await fetchData();
+    } catch (err) {
+      alert(
+        err?.response?.data?.message || "Erro ao excluir usuário"
+      );
     }
   };
 
@@ -85,7 +137,7 @@ export default function AdminUsers() {
           <div>
             <h2>Motoristas</h2>
             <p className="muted">
-              Cadastre e gerencie os acessos dos motoristas.
+              Cadastre, edite e gerencie os acessos dos motoristas.
             </p>
           </div>
 
@@ -107,7 +159,7 @@ export default function AdminUsers() {
             <button
               className="btn btn-primary"
               type="button"
-              onClick={openModal}
+              onClick={openCreateModal}
               aria-haspopup="dialog"
               aria-expanded={open ? "true" : "false"}
             >
@@ -124,27 +176,46 @@ export default function AdminUsers() {
                 <th>Usuário</th>
                 <th>Função</th>
                 <th>Status</th>
+                <th className="users-actions-col">Ações</th>
               </tr>
             </thead>
             <tbody>
               {!loading && list.length === 0 && (
                 <tr>
-                  <td colSpan="4" className="muted users-center-cell">
+                  <td colSpan="5" className="muted users-center-cell">
                     Sem resultados
                   </td>
                 </tr>
               )}
+
               {list.map((u) => (
                 <tr key={u._id}>
                   <td>{u.name}</td>
                   <td>{u.email}</td>
                   <td>{u.role}</td>
                   <td>{u.active ? "Ativo" : "Inativo"}</td>
+                  <td className="users-row-actions">
+                    <button
+                      type="button"
+                      className="btn btn-sm btn-outline-primary"
+                      onClick={() => openEditModal(u)}
+                    >
+                      Editar
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-sm btn-outline-danger"
+                      onClick={() => handleDelete(u)}
+                    >
+                      Excluir
+                    </button>
+                  </td>
                 </tr>
               ))}
+
               {loading && (
                 <tr>
-                  <td colSpan="4" className="muted users-center-cell">
+                  <td colSpan="5" className="muted users-center-cell">
                     Carregando…
                   </td>
                 </tr>
@@ -154,6 +225,7 @@ export default function AdminUsers() {
         </div>
       </div>
 
+      {/* Modal de criação / edição */}
       {open && (
         <div
           className="admin-modal"
@@ -170,7 +242,7 @@ export default function AdminUsers() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="modal-head">
-              <h3>Novo usuário</h3>
+              <h3>{editingUser ? "Editar usuário" : "Novo usuário"}</h3>
               <button
                 className="btn btn-sm btn-outline-light"
                 type="button"
@@ -181,7 +253,7 @@ export default function AdminUsers() {
               </button>
             </div>
 
-            <form className="users-form" onSubmit={submitCreate}>
+            <form className="users-form" onSubmit={handleSubmit}>
               <div className="form-field">
                 <label>Nome</label>
                 <input
@@ -194,7 +266,7 @@ export default function AdminUsers() {
               </div>
 
               <div className="form-field">
-                <label>Placa</label>
+                <label>Placa / Usuário</label>
                 <input
                   className="form-control"
                   type="text"
@@ -206,13 +278,21 @@ export default function AdminUsers() {
               </div>
 
               <div className="form-field">
-                <label>Senha</label>
+                <label>
+                  Senha{" "}
+                  {editingUser && (
+                    <span className="muted">
+                      (preencha apenas se desejar alterar)
+                    </span>
+                  )}
+                </label>
                 <input
                   className="form-control"
                   type="password"
                   value={fPass}
                   onChange={(e) => setFPass(e.target.value)}
-                  required
+                  placeholder={editingUser ? "Deixar em branco para manter" : ""}
+                  required={!editingUser}
                 />
               </div>
 
@@ -232,7 +312,13 @@ export default function AdminUsers() {
                   type="submit"
                   disabled={saving}
                 >
-                  {saving ? "Salvando..." : "Salvar"}
+                  {saving
+                    ? editingUser
+                      ? "Atualizando..."
+                      : "Salvando..."
+                    : editingUser
+                    ? "Atualizar"
+                    : "Salvar"}
                 </button>
               </div>
             </form>

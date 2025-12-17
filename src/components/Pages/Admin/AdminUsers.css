@@ -288,3 +288,31 @@ h2 {
     animation: none !important;
   }
 }
+
+/* Coluna de ações na tabela de motoristas */
+.users-actions-col {
+  width: 150px;
+  text-align: right;
+}
+
+.users-row-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.users-row-actions .btn {
+  padding-inline: 8px;
+}
+
+/* Ajuste no mobile */
+@media (max-width: 768px) {
+  .users-actions-col {
+    width: 120px;
+  }
+
+  .users-row-actions {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+}

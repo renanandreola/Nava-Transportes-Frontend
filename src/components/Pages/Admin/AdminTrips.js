@@ -20,6 +20,22 @@ export default function AdminTrips() {
   const [dateTo, setDateTo] = useState("");
   const [q, setQ] = useState("");
 
+  // edição
+  const [editOpen, setEditOpen] = useState(false);
+  const [allowBackdropClose, setAllowBackdropClose] = useState(false);
+  const [savingEdit, setSavingEdit] = useState(false);
+  const [editError, setEditError] = useState("");
+  const [editingTrip, setEditingTrip] = useState(null);
+
+  // campos do modal de edição
+  const [fDriverId, setFDriverId] = useState("");
+  const [fDriverName, setFDriverName] = useState("");
+  const [fPlate, setFPlate] = useState("");
+  const [fTotalFrete, setFTotalFrete] = useState(0);
+  const [fTotalPago, setFTotalPago] = useState(0);
+  const [fPremiacao, setFPremiacao] = useState(0);
+  const [fTotalAssinado, setFTotalAssinado] = useState(0);
+
   const fetchDrivers = async () => {
     try {
       const { data } = await api.get("/admin/users", {
@@ -36,16 +52,16 @@ export default function AdminTrips() {
     setErr("");
 
     try {
-    const { data } = await api.get("/admin/trips", {
+      const { data } = await api.get("/admin/trips", {
         params: {
-            driverId: driverId || undefined,
-            plate: plate || undefined,
-            from: dateFrom || undefined,
-            to: dateTo || undefined,
-            q: q || undefined,
-            limit: 100,
+          driverId: driverId || undefined,
+          plate: plate || undefined,
+          from: dateFrom || undefined,
+          to: dateTo || undefined,
+          q: q || undefined,
+          limit: 100,
         },
-    });
+      });
 
       setTrips(data.items || []);
     } catch (e) {
@@ -92,6 +108,100 @@ export default function AdminTrips() {
       return "-";
     }
   };
+
+  // ---------- EDIÇÃO ----------
+
+  const openEditModal = (trip) => {
+    setEditError("");
+    setEditingTrip(trip || null);
+
+    setFDriverId(trip.driverId || "");
+    setFDriverName(trip.driverName || "");
+    setFPlate(trip.plate || "");
+    setFTotalFrete(trip.totalDoFrete || trip.totalFrete || 0);
+    setFTotalPago(trip.totalPago || 0);
+    setFPremiacao(trip.premiacao || 0);
+    setFTotalAssinado(trip.totalAssinado || 0);
+
+    setEditOpen(true);
+    setAllowBackdropClose(false);
+    setTimeout(() => setAllowBackdropClose(true), 150);
+  };
+
+  const closeEditModal = () => {
+    if (savingEdit) return;
+    setEditOpen(false);
+  };
+
+  // atualizar nome do driver ao trocar no select
+  useEffect(() => {
+    if (!fDriverId) {
+      return;
+    }
+    const d = drivers.find((x) => x._id === fDriverId);
+    if (d) {
+      setFDriverName(d.name || d.email || "");
+    }
+  }, [fDriverId, drivers]);
+
+  // ESC fecha modal
+  useEffect(() => {
+    if (!editOpen) return;
+    const onKey = (e) => {
+      if (e.key === "Escape") closeEditModal();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [editOpen, savingEdit]);
+
+  const submitEdit = async (e) => {
+    e.preventDefault();
+    if (!editingTrip || savingEdit) return;
+
+    setEditError("");
+    setSavingEdit(true);
+
+    try {
+      const payload = {
+        driverId: fDriverId || undefined,
+        driverName: fDriverName || undefined,
+        plate: fPlate.trim(),
+        totalDoFrete: n(fTotalFrete),
+        totalPago: n(fTotalPago),
+        premiacao: n(fPremiacao),
+        totalAssinado: n(fTotalAssinado),
+      };
+
+      await api.put(`/admin/trips/${editingTrip._id}`, payload);
+
+      setEditOpen(false);
+      await fetchTrips();
+    } catch (e2) {
+      setEditError(
+        e2?.response?.data?.message || "Erro ao atualizar controle"
+      );
+    } finally {
+      setSavingEdit(false);
+    }
+  };
+
+  const handleDelete = async (trip) => {
+    const ok = window.confirm(
+      `Tem certeza que deseja excluir o controle da placa "${trip.plate}"?`
+    );
+    if (!ok) return;
+
+    try {
+      await api.delete(`/admin/trips/${trip._id}`);
+      await fetchTrips();
+    } catch (e2) {
+      alert(
+        e2?.response?.data?.message || "Erro ao excluir controle"
+      );
+    }
+  };
+
+  // ---------- RENDER ----------
 
   return (
     <div className="card admin-trips-card">
@@ -208,7 +318,9 @@ export default function AdminTrips() {
         {loading ? (
           <p className="muted">Carregando controles…</p>
         ) : trips.length === 0 ? (
-          <p className="muted">Nenhum controle encontrado com os filtros atuais.</p>
+          <p className="muted">
+            Nenhum controle encontrado com os filtros atuais.
+          </p>
         ) : (
           <table className="table admin-trips-table">
             <thead>
@@ -223,6 +335,7 @@ export default function AdminTrips() {
                 <th>Total Pago</th>
                 <th>Premiação</th>
                 <th>Criado em</th>
+                <th className="admin-trips-actions-col">Ações</th>
               </tr>
             </thead>
             <tbody>
@@ -248,6 +361,22 @@ export default function AdminTrips() {
                     <td>{brCurrency(t.totalPago)}</td>
                     <td>{brCurrency(t.premiacao)}</td>
                     <td>{formatDateTime(t.createdAt)}</td>
+                    <td className="admin-trips-row-actions">
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-outline-primary"
+                        onClick={() => openEditModal(t)}
+                      >
+                        Editar
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-outline-danger"
+                        onClick={() => handleDelete(t)}
+                      >
+                        Excluir
+                      </button>
+                    </td>
                   </tr>
                 );
               })}
@@ -255,6 +384,143 @@ export default function AdminTrips() {
           </table>
         )}
       </div>
+
+      {/* Modal de edição */}
+      {editOpen && (
+        <div
+          className="admin-modal"
+          role="dialog"
+          aria-modal="true"
+          onClick={(e) => {
+            if (allowBackdropClose && e.target === e.currentTarget) {
+              closeEditModal();
+            }
+          }}
+        >
+          <div
+            className="admin-modal-card pop"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="modal-head">
+              <h3>Editar controle de saída</h3>
+              <button
+                className="btn btn-sm btn-outline-light"
+                type="button"
+                onClick={closeEditModal}
+                disabled={savingEdit}
+              >
+                Fechar
+              </button>
+            </div>
+
+            <form className="admin-trips-form" onSubmit={submitEdit}>
+              <div className="form-field">
+                <label>Motorista</label>
+                <select
+                  className="form-control"
+                  value={fDriverId}
+                  onChange={(e) => setFDriverId(e.target.value)}
+                >
+                  <option value="">(manter atual)</option>
+                  {drivers.map((d) => (
+                    <option key={d._id} value={d._id}>
+                      {d.name || d.email}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-field">
+                <label>Nome do motorista (exibição)</label>
+                <input
+                  className="form-control"
+                  value={fDriverName}
+                  onChange={(e) => setFDriverName(e.target.value)}
+                  placeholder="Vai para o campo driverName"
+                />
+              </div>
+
+              <div className="form-field">
+                <label>Placa</label>
+                <input
+                  className="form-control"
+                  value={fPlate}
+                  onChange={(e) => setFPlate(e.target.value.toUpperCase())}
+                  required
+                />
+              </div>
+
+              <div className="admin-trips-form-grid">
+                <div className="form-field">
+                  <label>Total do Frete</label>
+                  <input
+                    className="form-control"
+                    type="number"
+                    step="0.01"
+                    value={fTotalFrete}
+                    onChange={(e) => setFTotalFrete(e.target.value)}
+                  />
+                </div>
+
+                <div className="form-field">
+                  <label>Total Pago</label>
+                  <input
+                    className="form-control"
+                    type="number"
+                    step="0.01"
+                    value={fTotalPago}
+                    onChange={(e) => setFTotalPago(e.target.value)}
+                  />
+                </div>
+
+                <div className="form-field">
+                  <label>Premiação</label>
+                  <input
+                    className="form-control"
+                    type="number"
+                    step="0.01"
+                    value={fPremiacao}
+                    onChange={(e) => setFPremiacao(e.target.value)}
+                  />
+                </div>
+
+                <div className="form-field">
+                  <label>Total Assinado</label>
+                  <input
+                    className="form-control"
+                    type="number"
+                    step="0.01"
+                    value={fTotalAssinado}
+                    onChange={(e) => setFTotalAssinado(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              {editError && (
+                <div className="alert error-alert">{editError}</div>
+              )}
+
+              <div className="row end gap admin-trips-modal-actions">
+                <button
+                  className="btn btn-outline-light btn-sm"
+                  type="button"
+                  onClick={closeEditModal}
+                  disabled={savingEdit}
+                >
+                  Cancelar
+                </button>
+                <button
+                  className="btn btn-primary btn-sm"
+                  type="submit"
+                  disabled={savingEdit}
+                >
+                  {savingEdit ? "Salvando..." : "Salvar alterações"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
