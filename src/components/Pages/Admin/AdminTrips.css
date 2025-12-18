@@ -149,3 +149,137 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Coluna de ações da grid principal */
+.admin-trips-actions-col {
+  width: 210px;
+  text-align: right;
+}
+
+.admin-trips-row-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+/* -------- MODAL DE DETALHES -------- */
+
+.admin-trips-details-modal {
+  z-index: 1200; /* acima de qualquer outra coisa */
+}
+
+.admin-trips-details-card {
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-trips-details-head h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.admin-trips-details-head .small {
+  margin-top: 4px;
+  font-size: 12px;
+}
+
+/* grid com 2 colunas no topo: resumo veículo + financeiro */
+.admin-trips-details-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 10px;
+}
+
+.admin-trips-details-section {
+  margin-top: 10px;
+}
+
+.admin-trips-details-section h4 {
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.details-kv {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 12px;
+}
+
+.details-kv > div {
+  min-width: 120px;
+}
+
+.details-kv span {
+  display: block;
+  color: #9ca3af;
+  margin-bottom: 2px;
+}
+
+.details-kv strong {
+  font-size: 13px;
+}
+
+/* criado em */
+.created-at {
+  margin-top: 10px;
+}
+
+/* extras */
+.admin-trips-extras {
+  margin-top: 16px;
+}
+
+.admin-trips-details-extras-table th,
+.admin-trips-details-extras-table td {
+  font-size: 13px;
+}
+
+/* tabela de trechos */
+.admin-trips-details-table-wrap {
+  max-height: 260px;
+  overflow: auto;
+  margin-top: 6px;
+}
+
+.admin-trips-details-table th,
+.admin-trips-details-table td {
+  font-size: 12px;
+  vertical-align: middle;
+}
+
+/* alerts reaproveitam seu estilo geral; só garante um visual consistente */
+.error-alert {
+  background: rgba(248, 113, 113, 0.1);
+  border: 1px solid rgba(248, 113, 113, 0.7);
+  color: #fecaca;
+  border-radius: 10px;
+  padding: 8px 10px;
+  font-size: 13px;
+}
+
+/* responsivo */
+@media (max-width: 900px) {
+  .admin-trips-details-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .admin-trips-actions-col {
+    width: 180px;
+  }
+
+  .admin-trips-row-actions {
+    justify-content: flex-start;
+  }
+
+  .admin-trips-details-table-wrap {
+    max-height: 220px;
+  }
+}

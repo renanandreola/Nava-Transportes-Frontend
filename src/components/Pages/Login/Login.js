@@ -44,6 +44,8 @@ export default function Login() {
     setLoading(true);
     try {
       // login
+      console.log('opa');
+      
       const resp = await api.post("/auth/login", { email, password });
 
       // opção A: role vindo do login

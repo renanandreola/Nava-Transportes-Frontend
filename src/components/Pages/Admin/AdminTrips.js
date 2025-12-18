@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import api from "../../../services/api";
 import "./AdminTrips.css";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
+
 
 // util simples para número e moeda
 const n = (v) => (isNaN(Number(v)) ? 0 : Number(v));
@@ -26,6 +29,10 @@ export default function AdminTrips() {
   const [savingEdit, setSavingEdit] = useState(false);
   const [editError, setEditError] = useState("");
   const [editingTrip, setEditingTrip] = useState(null);
+
+  // detalhes (somente leitura)
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const [viewingTrip, setViewingTrip] = useState(null);
 
   // campos do modal de edição
   const [fDriverId, setFDriverId] = useState("");
@@ -144,7 +151,7 @@ export default function AdminTrips() {
     }
   }, [fDriverId, drivers]);
 
-  // ESC fecha modal
+  // ESC fecha modal de edição
   useEffect(() => {
     if (!editOpen) return;
     const onKey = (e) => {
@@ -195,13 +202,230 @@ export default function AdminTrips() {
       await api.delete(`/admin/trips/${trip._id}`);
       await fetchTrips();
     } catch (e2) {
-      alert(
-        e2?.response?.data?.message || "Erro ao excluir controle"
-      );
+      alert(e2?.response?.data?.message || "Erro ao excluir controle");
     }
   };
 
-  // ---------- RENDER ----------
+  // ---------- DETALHES (VER TUDO) ----------
+
+  const openDetailsModal = (trip) => {
+    setViewingTrip(trip || null);
+    setDetailsOpen(true);
+    setAllowBackdropClose(false);
+    setTimeout(() => setAllowBackdropClose(true), 150);
+  };
+
+  const closeDetailsModal = () => {
+    setDetailsOpen(false);
+  };
+
+  // ESC fecha modal de detalhes
+  useEffect(() => {
+    if (!detailsOpen) return;
+    const onKey = (e) => {
+      if (e.key === "Escape") closeDetailsModal();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [detailsOpen]);
+
+  const renderDetailsModal = () => {
+    if (!detailsOpen || !viewingTrip) return null;
+
+    const t = viewingTrip;
+    const kmIni = n(t.kmInicial);
+    const kmFim = n(t.kmFinal);
+    const kmRodado = kmFim - kmIni;
+    const litrosTotal = n(t.litrosTotal);
+    const mediaGeral = n(t.mediaGeral);
+    const extras = Array.isArray(t.extras) ? t.extras : [];
+    const trechos = Array.isArray(t.trechos) ? t.trechos : [];
+
+    const dataPrincipal =
+      trechos && trechos.length
+        ? trechos[0].data
+        : t.data || t.createdAt;
+
+    return (
+      <div
+        className="admin-modal admin-trips-details-modal"
+        role="dialog"
+        aria-modal="true"
+        onClick={(e) => {
+          if (allowBackdropClose && e.target === e.currentTarget) {
+            closeDetailsModal();
+          }
+        }}
+      >
+        <div
+          className="admin-modal-card admin-trips-details-card pop"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="modal-head admin-trips-details-head">
+            <div>
+              <h3>Detalhes do controle de saída</h3>
+              <p className="muted small">
+                Motorista: <b>{t.driverName || "-"}</b> • Placa:{" "}
+                <b>{t.plate || "-"}</b> • Data principal:{" "}
+                <b>{formatDate(dataPrincipal)}</b>
+              </p>
+            </div>
+            <button
+              className="btn btn-sm btn-outline-light"
+              type="button"
+              onClick={closeDetailsModal}
+            >
+              Fechar
+            </button>
+          </div>
+
+          {/* Resumo geral */}
+          <div className="admin-trips-details-grid">
+            <div className="admin-trips-details-section">
+              <h4>Resumo do veículo</h4>
+              <div className="details-kv">
+                <div>
+                  <span>KM Inicial</span>
+                  <strong>{kmIni || "-"}</strong>
+                </div>
+                <div>
+                  <span>KM Final</span>
+                  <strong>{kmFim || "-"}</strong>
+                </div>
+                <div>
+                  <span>KM Rodado</span>
+                  <strong>{kmRodado || "-"}</strong>
+                </div>
+              </div>
+
+              <div className="details-kv">
+                <div>
+                  <span>Litros total</span>
+                  <strong>{litrosTotal || "-"}</strong>
+                </div>
+                <div>
+                  <span>Média geral (km/l)</span>
+                  <strong>{mediaGeral || "-"}</strong>
+                </div>
+              </div>
+            </div>
+
+            <div className="admin-trips-details-section">
+              <h4>Resumo financeiro</h4>
+              <div className="details-kv">
+                <div>
+                  <span>Total do Frete</span>
+                  <strong>{brCurrency(t.totalDoFrete || t.totalFrete)}</strong>
+                </div>
+                <div>
+                  <span>Total Pago</span>
+                  <strong>{brCurrency(t.totalPago)}</strong>
+                </div>
+              </div>
+              <div className="details-kv">
+                <div>
+                  <span>Premiação</span>
+                  <strong>{brCurrency(t.premiacao)}</strong>
+                </div>
+                <div>
+                  <span>Total Assinado</span>
+                  <strong>{brCurrency(t.totalAssinado)}</strong>
+                </div>
+              </div>
+
+              <p className="muted small created-at">
+                Criado em: {formatDateTime(t.createdAt)}
+              </p>
+            </div>
+          </div>
+
+          {/* Extras */}
+          {extras.length > 0 && (
+            <div className="admin-trips-details-section admin-trips-extras">
+              <h4>Extras</h4>
+              <table className="table admin-trips-details-extras-table">
+                <thead>
+                  <tr>
+                    <th>Descrição</th>
+                    <th style={{ width: 140 }}>Valor</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {extras.map((ex, idx) => (
+                    <tr key={idx}>
+                      <td>{ex.descricao || "-"}</td>
+                      <td>{brCurrency(ex.valor)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {/* Trechos */}
+          <div className="admin-trips-details-section">
+            <h4>Trechos cadastrados</h4>
+            {trechos.length === 0 ? (
+              <p className="muted small">
+                Nenhum trecho cadastrado para este controle.
+              </p>
+            ) : (
+              <div className="table-wrap admin-trips-details-table-wrap">
+                <table className="table admin-trips-details-table">
+                  <thead>
+                    <tr>
+                      <th>Data</th>
+                      <th>Origem</th>
+                      <th>Destino</th>
+                      <th>Frete (R$)</th>
+                      <th>Adiant. (R$)</th>
+                      <th>Saldo (R$)</th>
+                      <th>KM Ini</th>
+                      <th>KM Fin</th>
+                      <th>Posto</th>
+                      <th>Litros</th>
+                      <th>Média</th>
+                      <th>Assinador</th>
+                      <th>Pago?</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {trechos.map((r, idx) => {
+                      const linhaKmIni = n(r.kmInicial);
+                      const linhaKmFim = n(r.kmFinal);
+                      const linhaSaldo = n(r.saldo);
+                      const linhaFrete = n(r.frete);
+                      const linhaAdto = n(r.adiantamento);
+
+                      return (
+                        <tr key={idx}>
+                          <td>{formatDate(r.data)}</td>
+                          <td>{r.origem || "-"}</td>
+                          <td>{r.destino || "-"}</td>
+                          <td>{brCurrency(linhaFrete)}</td>
+                          <td>{brCurrency(linhaAdto)}</td>
+                          <td>{brCurrency(linhaSaldo)}</td>
+                          <td>{linhaKmIni || "-"}</td>
+                          <td>{linhaKmFim || "-"}</td>
+                          <td>{r.posto || "-"}</td>
+                          <td>{r.litros || 0}</td>
+                          <td>{r.mediaTrecho || 0}</td>
+                          <td>{r.assinador || "-"}</td>
+                          <td>{r.pago ? "Sim" : "Não"}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // ---------- RENDER PRINCIPAL ----------
 
   return (
     <div className="card admin-trips-card">
@@ -364,6 +588,13 @@ export default function AdminTrips() {
                     <td className="admin-trips-row-actions">
                       <button
                         type="button"
+                        className="btn btn-sm btn-outline-secondary"
+                        onClick={() => openDetailsModal(t)}
+                      >
+                        Ver detalhes
+                      </button>
+                      <button
+                        type="button"
                         className="btn btn-sm btn-outline-primary"
                         onClick={() => openEditModal(t)}
                       >
@@ -521,6 +752,9 @@ export default function AdminTrips() {
           </div>
         </div>
       )}
+
+      {/* Modal de detalhes */}
+      {renderDetailsModal()}
     </div>
   );
 }
