@@ -46,7 +46,11 @@ export default function DriverLayout() {
             <span>📝</span> Novo controle
           </NavLink>
 
-          <NavLink to="/driver/trips" className="drv-nav-item">
+          <NavLink
+            to="/driver/trips"
+            end
+            className="drv-nav-item"
+          >
             <span>📄</span> Minhas viagens
           </NavLink>
         </nav>

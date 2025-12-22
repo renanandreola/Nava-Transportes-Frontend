@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import api from "../../../services/api";
 import "./AdminTrips.css";
 import jsPDF from "jspdf";
-import "jspdf-autotable";
+import autoTable from "jspdf-autotable";
 
 
 // util simples para número e moeda
@@ -42,6 +42,117 @@ export default function AdminTrips() {
   const [fTotalPago, setFTotalPago] = useState(0);
   const [fPremiacao, setFPremiacao] = useState(0);
   const [fTotalAssinado, setFTotalAssinado] = useState(0);
+
+  const [mapOpen, setMapOpen] = useState(false);
+  const [mapTrip, setMapTrip] = useState(null);
+
+  const openMapModal = (trip) => {
+    if (!trip || !trip.latitude || !trip.longitude) return;
+    setMapTrip(trip);
+    setMapOpen(true);
+    setAllowBackdropClose(false);
+    setTimeout(() => setAllowBackdropClose(true), 150);
+  };
+
+  const closeMapModal = () => {
+    setMapOpen(false);
+    setMapTrip(null);
+  };
+
+  // ESC fecha o modal de mapa também
+  useEffect(() => {
+    if (!mapOpen) return;
+    const onKey = (e) => {
+      if (e.key === "Escape") closeMapModal();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [mapOpen]);
+
+  const handleExportPdf = () => {
+    if (!trips || trips.length === 0) {
+      alert("Não há controles para exportar com os filtros atuais.");
+      return;
+    }
+
+    const doc = new jsPDF({ orientation: "landscape" });
+
+    // Título
+    doc.setFontSize(14);
+    doc.text("Controles de Saída - Nava Transportes", 14, 14);
+
+    // Linha de filtros usados
+    const filtros = [];
+    if (driverId) {
+      const d = drivers.find((x) => x._id === driverId);
+      filtros.push("Motorista: " + (d?.name || d?.email || driverId));
+    }
+    if (plate) filtros.push("Placa: " + plate);
+    if (dateFrom) filtros.push("De: " + formatDate(dateFrom));
+    if (dateTo) filtros.push("Até: " + formatDate(dateTo));
+    if (q) filtros.push("Busca: " + q);
+
+    doc.setFontSize(10);
+    doc.text(
+      "Filtros: " + (filtros.length ? filtros.join(" | ") : "Nenhum"),
+      14,
+      22
+    );
+    doc.text(
+      "Gerado em: " + new Date().toLocaleString("pt-BR"),
+      14,
+      28
+    );
+
+    // Monta linhas da tabela
+    const body = trips.map((t) => {
+      const kmIni = n(t.kmInicial);
+      const kmFim = n(t.kmFinal);
+      const kmRodado = kmFim - kmIni;
+
+      const dataPrincipal =
+        t.trechos && t.trechos.length
+          ? t.trechos[0].data
+          : t.data || t.createdAt;
+
+      return [
+        formatDate(dataPrincipal),
+        t.driverName || "-",
+        t.plate || "-",
+        kmIni || "-",
+        kmFim || "-",
+        kmRodado || "-",
+        brCurrency(t.totalDoFrete || t.totalFrete),
+        brCurrency(t.totalPago),
+        brCurrency(t.premiacao),
+        brCurrency(t.totalAssinado),
+        formatDateTime(t.createdAt),
+      ];
+    });
+
+    // 👉 aqui é a mudança importante
+    autoTable(doc, {
+      startY: 34,
+      head: [[
+        "Data",
+        "Motorista",
+        "Placa",
+        "KM Inicial",
+        "KM Final",
+        "KM Rodado",
+        "Total Frete",
+        "Total Pago",
+        "Premiação",
+        "Total Assinado",
+        "Criado em",
+      ]],
+      body,
+      styles: { fontSize: 8 },
+      headStyles: { fillColor: [37, 99, 235] },
+    });
+
+    doc.save("controles_saida.pdf");
+  };
 
   const fetchDrivers = async () => {
     try {
@@ -447,6 +558,15 @@ export default function AdminTrips() {
           >
             {loading ? "Atualizando..." : "Atualizar"}
           </button>
+
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={handleExportPdf}
+            disabled={loading || !trips.length}
+          >
+            Exportar PDF
+          </button>
         </div>
       </div>
 
@@ -558,6 +678,7 @@ export default function AdminTrips() {
                 <th>Total Frete</th>
                 <th>Total Pago</th>
                 <th>Premiação</th>
+                <th>Local</th> {/* 👈 nova coluna */}
                 <th>Criado em</th>
                 <th className="admin-trips-actions-col">Ações</th>
               </tr>
@@ -573,6 +694,8 @@ export default function AdminTrips() {
                     ? t.trechos[0].data
                     : t.data || t.createdAt;
 
+                const hasCoords = t.latitude && t.longitude;
+
                 return (
                   <tr key={t._id}>
                     <td>{formatDate(dataPrincipal)}</td>
@@ -584,15 +707,21 @@ export default function AdminTrips() {
                     <td>{brCurrency(t.totalDoFrete || t.totalFrete)}</td>
                     <td>{brCurrency(t.totalPago)}</td>
                     <td>{brCurrency(t.premiacao)}</td>
+                    <td>
+                      {hasCoords ? (
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-outline-secondary"
+                          onClick={() => openMapModal(t)}
+                        >
+                          Ver mapa
+                        </button>
+                      ) : (
+                        <span className="muted">Sem local</span>
+                      )}
+                    </td>
                     <td>{formatDateTime(t.createdAt)}</td>
                     <td className="admin-trips-row-actions">
-                      <button
-                        type="button"
-                        className="btn btn-sm btn-outline-secondary"
-                        onClick={() => openDetailsModal(t)}
-                      >
-                        Ver detalhes
-                      </button>
                       <button
                         type="button"
                         className="btn btn-sm btn-outline-primary"
@@ -749,6 +878,62 @@ export default function AdminTrips() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de mapa */}
+      {mapOpen && mapTrip && (
+        <div
+          className="admin-modal"
+          role="dialog"
+          aria-modal="true"
+          onClick={(e) => {
+            if (allowBackdropClose && e.target === e.currentTarget) {
+              closeMapModal();
+            }
+          }}
+        >
+          <div
+            className="admin-modal-card pop admin-map-modal-card"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="modal-head">
+              <h3>Local do registro</h3>
+              <button
+                className="btn btn-sm btn-outline-light"
+                type="button"
+                onClick={closeMapModal}
+              >
+                Fechar
+              </button>
+            </div>
+
+            <div className="admin-map-info">
+              <p className="muted">
+                Motorista: <strong>{mapTrip.driverName || "-"}</strong> • Placa:{" "}
+                <strong>{mapTrip.plate || "-"}</strong>
+              </p>
+              {mapTrip.latitude && mapTrip.longitude && (
+                <p className="muted">
+                  Coordenadas:{" "}
+                  {mapTrip.latitude.toFixed(5)}, {mapTrip.longitude.toFixed(5)}
+                </p>
+              )}
+            </div>
+
+            <div className="admin-map-container">
+              {mapTrip.latitude && mapTrip.longitude ? (
+                <iframe
+                  title="Mapa do local do registro"
+                  src={`https://www.google.com/maps?q=${mapTrip.latitude},${mapTrip.longitude}&z=15&output=embed`}
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                />
+              ) : (
+                <p className="muted">Sem coordenadas para este controle.</p>
+              )}
+            </div>
           </div>
         </div>
       )}

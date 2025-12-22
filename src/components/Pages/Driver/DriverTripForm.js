@@ -7,6 +7,15 @@ const n = (v) => (isNaN(Number(v)) ? 0 : Number(v));
 const brCurrency = (v) =>
   n(v).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
+// helper para usar geolocalização com async/await
+const getCurrentPosition = (options) =>
+  new Promise((resolve, reject) => {
+    if (!("geolocation" in navigator)) {
+      return reject(new Error("Geolocalização não suportada"));
+    }
+    navigator.geolocation.getCurrentPosition(resolve, reject, options);
+  });
+
 export default function DriverTripForm() {
   const [me, setMe] = useState(null);
 
@@ -126,6 +135,26 @@ export default function DriverTripForm() {
     setErr("");
     setOk("");
     setSaving(true);
+
+    let geo = null;
+
+    // tenta pegar a localização atual do motorista
+    try {
+      const pos = await getCurrentPosition({
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0,
+      });
+      geo = {
+        latitude: pos.coords.latitude,
+        longitude: pos.coords.longitude,
+        accuracy: pos.coords.accuracy,
+      };
+    } catch (eGeo) {
+      // se o usuário negar permissão ou der erro, só segue sem travar
+      console.warn("Não foi possível obter localização:", eGeo?.message);
+    }
+
     try {
       const payload = {
         driverId: me?._id, // o back vai sobrescrever se não for admin
@@ -156,6 +185,11 @@ export default function DriverTripForm() {
           litros: n(r.litros),
           mediaTrecho: n(r.mediaTrecho),
         })),
+
+        // 👇 novos campos de localização (opcionais)
+        latitude: geo?.latitude,
+        longitude: geo?.longitude,
+        locationAccuracy: geo?.accuracy,
       };
 
       await api.post("/driver/trips", payload);
