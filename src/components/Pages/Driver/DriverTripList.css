@@ -50,6 +50,7 @@
 .driver-trip-table thead th {
   font-weight: 500;
   color: #9ca3af;
+  /* color: black; */
   border-bottom: 1px solid rgba(55, 65, 81, 0.9);
   background: #020617;
 }
@@ -157,7 +158,8 @@
 
 .driver-modal-form .form-field label {
   font-size: 12px;
-  color: #9ca3af;
+  /* color: #9ca3af; */
+  color: black;
 }
 
 .driver-modal-grid {

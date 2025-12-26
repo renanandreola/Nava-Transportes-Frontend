@@ -50,6 +50,7 @@
 
 .drv-brand-text span {
   color: #9ca3af;
+  /* color: black; */
   font-size: 12px;
 }
 
@@ -64,6 +65,7 @@
 .drv-nav-section {
   padding: 8px 10px 4px;
   color: #9ca3af;
+  /* color: black; */
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -121,6 +123,7 @@
 
 .drv-user-role {
   color: #9ca3af;
+  /* color: black; */
   font-size: 11px;
 }
 
@@ -133,6 +136,9 @@
   cursor: pointer;
   color: #e5e7eb;
   font-size: 12px;
+  /* color: black; */
+  text-align: center;
+  justify-content: center;
 }
 
 .drv-shell .btn-ghost.drv-logout:hover {
@@ -165,6 +171,7 @@
   margin: 2px 0 0;
   font-size: 12px;
   color: #9ca3af;
+  /* color: black; */
 }
 
 /* Conteúdo */

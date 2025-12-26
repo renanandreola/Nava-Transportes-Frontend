@@ -226,9 +226,12 @@ export default function DriverTripForm() {
           <div>
             <h2>Controle de Saída de Veículo</h2>
             <p className="muted">
-              Motorista: <b>{me?.name || "-"}</b> • Perfil:{" "}
-              <b>{me?.role || "-"}</b>
+              • Motorista: <b>{me?.name || "-"}</b>
             </p>
+
+            {/* <p className="muted">
+              • Perfil:{" "}<b>{me?.role || "-"}</b>
+            </p> */}
           </div>
         </div>
 
@@ -500,6 +503,7 @@ export default function DriverTripForm() {
               type="button"
               onClick={() => window.history.back()}
               disabled={saving}
+              style={{color: "black"}}
             >
               Cancelar
             </button>

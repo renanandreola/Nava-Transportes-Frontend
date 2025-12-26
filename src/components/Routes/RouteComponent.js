@@ -13,6 +13,7 @@ import DriverLayout from "../Pages/Driver/DriverLayout";
 import DriverHome from "../Pages/Driver/DriverHome";
 import DriverTripForm from "../Pages/Driver/DriverTripForm";
 import DriverTripList from "../Pages/Driver/DriverTripList";
+import AdminAnalytics from "../Pages/Admin/AdminAnalytics";
 
 function RouteComponent() {
   return (
@@ -62,6 +63,8 @@ function RouteComponent() {
             </RequireRole>
           }
         />
+
+        <Route path="/admin/analytics" element={<AdminAnalytics />} />
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

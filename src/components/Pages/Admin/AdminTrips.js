@@ -634,7 +634,7 @@ export default function AdminTrips() {
           <div className="filters-actions">
             <button
               type="button"
-              className="btn"
+              className="btn btn-danger"
               onClick={clearFilters}
               disabled={loading}
             >
@@ -642,7 +642,7 @@ export default function AdminTrips() {
             </button>
             <button
               type="submit"
-              className="btn primary"
+              className="btn btn-primary"
               disabled={loading}
             >
               Filtrar

@@ -136,6 +136,9 @@
 
 /* Botão ghost só pro logout aqui (não conflita com os outros) */
 .btn-ghost {
+  /* color: black; */
+  text-align: center;
+  justify-content: center;
   background: transparent;
   border: 1px solid rgba(148, 163, 184, 0.7);
   padding: 7px 14px;

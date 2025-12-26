@@ -14,6 +14,11 @@ export default function AdminDashboard() {
 
   const [latest, setLatest] = useState([]);
 
+  const roleLabel = {
+    driver: "Motorista",
+    admin: "Administrador",
+  };
+
   const formatDateTime = (v) => {
     if (!v) return "-";
     try {
@@ -62,11 +67,11 @@ export default function AdminDashboard() {
             <p className="muted">
               {me ? (
                 <>
-                  Bem-vindo, <strong>{me.name}</strong> — perfil{" "}
+                  • Bem-vindo, <strong>{me.name}</strong> — perfil{" "}
                   <b>{me.role}</b>.
                 </>
               ) : (
-                <>Bem-vindo ao painel administrativo.</>
+                <>• Bem-vindo ao painel administrativo.</>
               )}
             </p>
           </div>
@@ -92,7 +97,7 @@ export default function AdminDashboard() {
         <div className="dashboard-grid">
           <div className="dashboard-stat">
             <div className="dashboard-stat-label">
-              Motoristas ativos (role: driver)
+              Motoristas ativos
             </div>
             <div className="dashboard-stat-num">
               {loading ? "—" : totalDrivers}
@@ -144,7 +149,7 @@ export default function AdminDashboard() {
                   <tr key={u._id}>
                     <td>{u.name || "-"}</td>
                     <td>{u.email || "-"}</td>
-                    <td>{u.role || "-"}</td>
+                    <td>{roleLabel[u.role] || "-"}</td>
                     <td>{formatDateTime(u.createdAt)}</td>
                   </tr>
                 ))}

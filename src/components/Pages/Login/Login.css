@@ -134,7 +134,8 @@ body {
 }
 
 .field-box input::placeholder {
-  color: #9ca3af;
+  /* color: #9ca3af; */
+  color: black;
 }
 
 .icon {
@@ -148,7 +149,8 @@ body {
   border: 0;
   background: transparent;
   cursor: pointer;
-  color: #9ca3af;
+  /* color: #9ca3af; */
+  color: black;
   font-size: 18px;
   border-radius: var(--radius-full);
   width: 30px;

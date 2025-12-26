@@ -37,6 +37,12 @@ export default function AdminLayout() {
           <NavLink to="/admin/trips" className="nav-item">
             <span>🚚</span> Controles de Saída
           </NavLink>
+
+          <div className="nav-section">Análises</div>
+
+          <NavLink to="/admin/analytics" className="nav-item">
+            <span>📈</span> Indicadores
+          </NavLink>
         </nav>
 
         <div className="adm-aside-foot">

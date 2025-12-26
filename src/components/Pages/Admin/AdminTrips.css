@@ -1,17 +1,24 @@
-/* ====== Tela de Controles de Saída (Admin) ====== */
+/* ====== Tela de Controles de Saída (Admin | padrão driver) ====== */
 
 .admin-trips-card {
+  padding: 25px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
+  background: #020617;
+  border-radius: 16px;
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  box-shadow: 0 22px 60px rgba(15, 23, 42, 0.7);
+  color: #e5e7eb;
 }
 
-/* Filtros */
+/* ====== Cabeçalho / filtros ====== */
+
 .admin-trips-filters {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
 }
 
 .filters-row {
@@ -28,8 +35,9 @@
 }
 
 .filter-field label {
-  color: var(--muted);
   font-size: 12px;
+  /* color: #9ca3af; */
+  color: black;
 }
 
 .filter-grow {
@@ -43,48 +51,57 @@
   gap: 8px;
 }
 
-/* Tabela */
+/* ====== Tabela ====== */
+
 .admin-trips-table-wrap {
   margin-top: 4px;
+  padding: 10px 0 2px;
+  border-radius: 10px;
+  overflow-x: auto;
 }
 
 .admin-trips-table {
+  min-width: 720px;
   font-size: 13px;
+  width: 100%;
+}
+
+.admin-trips-table thead th {
+  font-weight: 500;
+  color: #9ca3af;
+  /* color: black; */
+  border-bottom: 1px solid rgba(55, 65, 81, 0.9);
+  background: #020617;
+  white-space: nowrap;
+}
+
+/* Zebra dark */
+.admin-trips-table tbody tr:nth-child(odd) {
+  background: rgba(15, 23, 42, 0.9);
+}
+
+.admin-trips-table tbody tr:nth-child(even) {
+  background: rgba(17, 24, 39, 0.95);
+}
+
+.admin-trips-table tbody tr:hover {
+  background: rgba(30, 64, 175, 0.25);
 }
 
 .admin-trips-table th,
 .admin-trips-table td {
   padding: 8px 10px;
-}
-
-.admin-trips-table thead th {
   white-space: nowrap;
 }
 
-/* Responsivo */
-@media (max-width: 768px) {
-  .filters-row {
-    flex-direction: column;
-  }
-
-  .filters-actions {
-    align-items: stretch;
-    justify-content: flex-start;
-  }
-
-  .filters-actions .btn,
-  .filters-actions .btn.primary {
-    width: 100%;
-  }
-
-  .admin-trips-table {
-    min-width: 720px;
-  }
+.admin-trips-table td {
+  color: #e5e7eb;
 }
 
-/* Coluna de ações na tabela */
+/* ====== Coluna de ações ====== */
+
 .admin-trips-actions-col {
-  width: 150px;
+  width: 210px;
   text-align: right;
 }
 
@@ -99,81 +116,24 @@
   padding-inline: 8px;
 }
 
-/* Form do modal de edição */
-.admin-trips-form {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.admin-trips-form .form-field {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  font-size: 13px;
-}
-
-.admin-trips-form .form-field label {
-  font-size: 12px;
-  color: var(--muted);
-}
-
-.admin-trips-form-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 10px;
-}
-
-/* Ações do modal */
-.admin-trips-modal-actions {
-  margin-top: 4px;
-}
-
-/* Responsivo */
-@media (max-width: 900px) {
-  .admin-trips-form-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 600px) {
-  .admin-trips-actions-col {
-    width: 120px;
-  }
-
-  .admin-trips-row-actions {
-    justify-content: flex-start;
-  }
-
-  .admin-trips-form-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Coluna de ações da grid principal */
-.admin-trips-actions-col {
-  width: 210px;
-  text-align: right;
-}
-
-.admin-trips-row-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-
-/* -------- MODAL DE DETALHES -------- */
+/* ====== Modal (edição / detalhes) ====== */
 
 .admin-trips-details-modal {
-  z-index: 1200; /* acima de qualquer outra coisa */
+  z-index: 1200;
 }
 
+/* Card base do modal */
 .admin-trips-details-card {
+  background: #020617;
+  border-radius: 16px;
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  box-shadow: 0 22px 60px rgba(15, 23, 42, 0.7);
   max-height: 90vh;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  padding: 16px 18px;
+  color: #e5e7eb;
 }
 
 .admin-trips-details-head h3 {
@@ -184,18 +144,20 @@
 .admin-trips-details-head .small {
   margin-top: 4px;
   font-size: 12px;
+  /* color: #9ca3af; */
+  color: black;
 }
 
-/* grid com 2 colunas no topo: resumo veículo + financeiro */
+/* Grid topo */
 .admin-trips-details-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
-  margin-top: 10px;
+  margin-top: 12px;
 }
 
 .admin-trips-details-section {
-  margin-top: 10px;
+  margin-top: 12px;
 }
 
 .admin-trips-details-section h4 {
@@ -204,6 +166,7 @@
   font-weight: 600;
 }
 
+/* Key / Value */
 .details-kv {
   display: flex;
   flex-wrap: wrap;
@@ -217,7 +180,8 @@
 
 .details-kv span {
   display: block;
-  color: #9ca3af;
+  /* color: #9ca3af; */
+  color: black;
   margin-bottom: 2px;
 }
 
@@ -230,7 +194,8 @@
   margin-top: 10px;
 }
 
-/* extras */
+/* ====== Extras ====== */
+
 .admin-trips-extras {
   margin-top: 16px;
 }
@@ -253,7 +218,73 @@
   vertical-align: middle;
 }
 
-/* alerts reaproveitam seu estilo geral; só garante um visual consistente */
+/* ====== Form do modal ====== */
+
+.admin-trips-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.admin-trips-form .form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+}
+
+.admin-trips-form .form-field label {
+  font-size: 12px;
+  /* color: #9ca3af; */
+  color: black;
+}
+
+.admin-trips-form-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.admin-trips-modal-actions {
+  margin-top: 6px;
+}
+
+/* ====== Modal do mapa ====== */
+
+.admin-map-modal-card {
+  width: min(900px, 96vw);
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  background: #020617;
+  border-radius: 16px;
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  box-shadow: 0 22px 60px rgba(15, 23, 42, 0.7);
+}
+
+.admin-map-info {
+  margin-bottom: 8px;
+  font-size: 13px;
+  /* color: #9ca3af; */
+  color: black;
+}
+
+.admin-map-container {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  height: min(480px, 60vh);
+}
+
+.admin-map-container iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* ====== Alerts ====== */
+
 .error-alert {
   background: rgba(248, 113, 113, 0.1);
   border: 1px solid rgba(248, 113, 113, 0.7);
@@ -261,12 +292,33 @@
   border-radius: 10px;
   padding: 8px 10px;
   font-size: 13px;
+  margin-bottom: 10px;
 }
 
-/* responsivo */
+/* ====== Responsivo ====== */
+
 @media (max-width: 900px) {
   .admin-trips-details-grid {
     grid-template-columns: 1fr;
+  }
+
+  .admin-trips-form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .filters-row {
+    flex-direction: column;
+  }
+
+  .filters-actions {
+    align-items: stretch;
+    justify-content: flex-start;
+  }
+
+  .filters-actions .btn {
+    width: 100%;
   }
 }
 
@@ -279,41 +331,25 @@
     justify-content: flex-start;
   }
 
+  .admin-trips-form-grid {
+    grid-template-columns: 1fr;
+  }
+
   .admin-trips-details-table-wrap {
     max-height: 220px;
   }
 }
 
-.admin-map-modal-card {
-  width: min(900px, 96vw);
-  max-height: 90vh;
-  display: flex;
-  flex-direction: column;
+.inp {
+  border: var(--bs-border-width) solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius);
+  height: 38px;
+  padding: 10px;
 }
 
-.admin-map-info {
-  margin-bottom: 8px;
-}
-
-.admin-map-container {
-  border-radius: 12px;
-  overflow: hidden;
-  border: 1px solid var(--line);
-  box-shadow: var(--shadow);
-  height: min(480px, 60vh);
-}
-
-.admin-map-container iframe {
-  width: 100%;
-  height: 100%;
-  border: 0;
-}
-
-@media (max-width: 768px) {
-  .admin-map-modal-card {
-    padding: 12px;
-  }
-  .admin-map-container {
-    height: 60vh;
+/* ====== Acessibilidade ====== */
+@media (prefers-reduced-motion: reduce) {
+  .admin-trips-table tbody tr:hover {
+    transition: none !important;
   }
 }

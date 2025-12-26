@@ -47,7 +47,8 @@
 .driver-helper {
   margin: 0;
   font-size: 13px;
-  color: #9ca3af;
+  /* color: #9ca3af; */
+  color: black;
 }
 
 /* Botão de sair */

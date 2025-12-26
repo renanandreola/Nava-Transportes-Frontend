@@ -16,6 +16,11 @@ export default function AdminUsers() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [editingUser, setEditingUser] = useState(null); // <- novo
+  
+  const roleLabel = {
+    driver: "Motorista",
+    admin: "Administrador",
+  };
 
   const fetchData = async () => {
     setLoading(true);
@@ -192,7 +197,7 @@ export default function AdminUsers() {
                 <tr key={u._id}>
                   <td>{u.name}</td>
                   <td>{u.email}</td>
-                  <td>{u.role}</td>
+                 <td>{roleLabel[u.role] || "-"}</td>
                   <td>{u.active ? "Ativo" : "Inativo"}</td>
                   <td className="users-row-actions">
                     <button
