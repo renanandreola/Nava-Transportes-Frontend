@@ -6,16 +6,24 @@ import "./DriverLayout.css";
 export default function DriverLayout() {
   const navigate = useNavigate();
   const [me, setMe] = useState(null);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     (async () => {
       try {
         const { data } = await api.get("/auth/me");
         setMe(data?.user || null);
-      } catch {
-        // se der erro, só não mostra o nome
-      }
+      } catch {}
     })();
+  }, []);
+
+  // Fecha menu com ESC
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === "Escape") setMenuOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
   }, []);
 
   const logout = async () => {
@@ -25,8 +33,13 @@ export default function DriverLayout() {
 
   return (
     <div className="drv-shell">
-      {/* Lateral */}
-      <aside className="drv-aside">
+      {/* Backdrop mobile */}
+      {menuOpen && (
+        <div className="drv-backdrop" onClick={() => setMenuOpen(false)} />
+      )}
+
+      {/* Sidebar */}
+      <aside className={`drv-aside ${menuOpen ? "open" : ""}`}>
         <div className="drv-brand">
           <div className="drv-logo-dot" />
           <div className="drv-brand-text">
@@ -36,13 +49,22 @@ export default function DriverLayout() {
         </div>
 
         <nav className="drv-nav">
-          <NavLink end to="/driver" className="drv-nav-item">
+          <NavLink
+            end
+            to="/driver"
+            className="drv-nav-item"
+            onClick={() => setMenuOpen(false)}
+          >
             <span>🏠</span> Início
           </NavLink>
 
           <div className="drv-nav-section">Viagens</div>
 
-          <NavLink to="/driver/trips/new" className="drv-nav-item">
+          <NavLink
+            to="/driver/trips/new"
+            className="drv-nav-item"
+            onClick={() => setMenuOpen(false)}
+          >
             <span>📝</span> Novo controle
           </NavLink>
 
@@ -50,6 +72,7 @@ export default function DriverLayout() {
             to="/driver/trips"
             end
             className="drv-nav-item"
+            onClick={() => setMenuOpen(false)}
           >
             <span>📄</span> Minhas viagens
           </NavLink>
@@ -59,9 +82,7 @@ export default function DriverLayout() {
           {me && (
             <div className="drv-user">
               <span className="drv-user-name">{me.name}</span>
-              <span className="drv-user-role">
-                {me.role === "driver" ? "Motorista" : me.role}
-              </span>
+              <span className="drv-user-role"> - Motorista</span>
             </div>
           )}
 
@@ -79,14 +100,23 @@ export default function DriverLayout() {
       <main className="drv-main">
         <header className="drv-header">
           <div className="drv-h-left">
-            <h1>Área do Motorista</h1>
-            {me && (
-              <p className="drv-header-sub">
-                Logado como <strong>{me.name}</strong>
-              </p>
-            )}
+            <button
+              className="drv-menu-btn"
+              onClick={() => setMenuOpen(true)}
+              aria-label="Abrir menu"
+            >
+              ☰
+            </button>
+
+            <div>
+              <h1>Área do Motorista</h1>
+              {me && (
+                <p className="drv-header-sub">
+                  Logado como <strong>{me.name}</strong>
+                </p>
+              )}
+            </div>
           </div>
-          <div className="drv-h-right">{/* espaço para futuro filtro/busca */}</div>
         </header>
 
         <section className="drv-content">
