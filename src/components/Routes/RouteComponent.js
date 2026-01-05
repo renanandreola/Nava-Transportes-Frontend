@@ -13,7 +13,7 @@ import DriverLayout from "../Pages/Driver/DriverLayout";
 import DriverHome from "../Pages/Driver/DriverHome";
 import DriverTripForm from "../Pages/Driver/DriverTripForm";
 import DriverTripList from "../Pages/Driver/DriverTripList";
-import AdminAnalytics from "../Pages/Admin/AdminAnalytics";
+// import AdminAnalytics from "../Pages/Admin/AdminAnalytics";
 
 function RouteComponent() {
   return (
@@ -21,8 +21,6 @@ function RouteComponent() {
       <ScrollToTop />
       <Routes>
         <Route path="/" element={<Login />} />
-
-        {/* compatibilidade: /home -> /driver */}
         <Route path="/home" element={<Navigate to="/driver" replace />} />
 
         {/* Área Driver (usuário comum) */}
@@ -64,7 +62,7 @@ function RouteComponent() {
           }
         />
 
-        <Route path="/admin/analytics" element={<AdminAnalytics />} />
+        {/* <Route path="/admin/analytics" element={<AdminAnalytics />} /> */}
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

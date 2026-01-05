@@ -12,7 +12,6 @@ export default function AdminLayout() {
     navigate("/", { replace: true });
   };
 
-  // Fecha menu com ESC
   useEffect(() => {
     const onKey = (e) => {
       if (e.key === "Escape") setMenuOpen(false);
@@ -23,7 +22,6 @@ export default function AdminLayout() {
 
   return (
     <div className="adm-shell">
-      {/* Backdrop mobile */}
       {menuOpen && (
         <div className="adm-backdrop" onClick={() => setMenuOpen(false)} />
       )}
@@ -66,7 +64,7 @@ export default function AdminLayout() {
             <span>🚚</span> Controles de Saída
           </NavLink>
 
-          <div className="nav-section">Análises</div>
+          {/* <div className="nav-section">Análises</div>
 
           <NavLink
             to="/admin/analytics"
@@ -74,7 +72,7 @@ export default function AdminLayout() {
             onClick={() => setMenuOpen(false)}
           >
             <span>📈</span> Indicadores
-          </NavLink>
+          </NavLink> */}
         </nav>
 
         <div className="drv-aside-foot">

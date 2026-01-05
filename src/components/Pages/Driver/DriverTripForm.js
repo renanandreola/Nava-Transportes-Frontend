@@ -2,12 +2,10 @@ import React, { useMemo, useState, useEffect } from "react";
 import api from "../../../services/api";
 import "./DriverTripForm.css";
 
-// util
 const n = (v) => (isNaN(Number(v)) ? 0 : Number(v));
 const brCurrency = (v) =>
   n(v).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
-// helper para usar geolocalização com async/await
 const getCurrentPosition = (options) =>
   new Promise((resolve, reject) => {
     if (!("geolocation" in navigator)) {
@@ -18,20 +16,15 @@ const getCurrentPosition = (options) =>
 
 export default function DriverTripForm() {
   const [me, setMe] = useState(null);
-
-  // cabeçalho
   const [plate, setPlate] = useState("");
 
-  // totais/rodapé
   const [premiacao, setPremiacao] = useState(0);
   const [totalAssinado, setTotalAssinado] = useState(0);
   const [totalPago, setTotalPago] = useState(0);
   const [totalDoFrete, setTotalDoFrete] = useState(0);
 
-  // extras
   const [extras, setExtras] = useState([{ descricao: "", valor: 0 }]);
 
-  // trechos (linhas)
   const [rows, setRows] = useState([
     {
       data: new Date().toISOString().slice(0, 10),
@@ -76,7 +69,6 @@ export default function DriverTripForm() {
     setRows((r) => {
       const clone = [...r];
       const item = { ...clone[idx], [field]: value };
-      // cálculos por linha
       const kmPerc = n(item.kmFinal) - n(item.kmInicial);
       item.mediaTrecho =
         n(item.litros) > 0 ? +(kmPerc / n(item.litros)).toFixed(2) : 0;
@@ -86,7 +78,6 @@ export default function DriverTripForm() {
     });
   };
 
-  // agregados
   const kmInicial = useMemo(
     () => (rows.length ? n(rows[0].kmInicial) : 0),
     [rows]
@@ -116,7 +107,6 @@ export default function DriverTripForm() {
     [rows]
   );
 
-  // carrega /auth/me para mostrar o motorista
   useEffect(() => {
     (async () => {
       try {
@@ -138,7 +128,6 @@ export default function DriverTripForm() {
 
     let geo = null;
 
-    // tenta pegar a localização atual do motorista
     try {
       const pos = await getCurrentPosition({
         enableHighAccuracy: true,
@@ -151,13 +140,12 @@ export default function DriverTripForm() {
         accuracy: pos.coords.accuracy,
       };
     } catch (eGeo) {
-      // se o usuário negar permissão ou der erro, só segue sem travar
       console.warn("Não foi possível obter localização:", eGeo?.message);
     }
 
     try {
       const payload = {
-        driverId: me?._id, // o back vai sobrescrever se não for admin
+        driverId: me?._id,
         driverName: me?.name,
         plate,
 
@@ -185,8 +173,6 @@ export default function DriverTripForm() {
           litros: n(r.litros),
           mediaTrecho: n(r.mediaTrecho),
         })),
-
-        // 👇 novos campos de localização (opcionais)
         latitude: geo?.latitude,
         longitude: geo?.longitude,
         locationAccuracy: geo?.accuracy,
@@ -194,7 +180,6 @@ export default function DriverTripForm() {
 
       await api.post("/driver/trips", payload);
       setOk("Viagem cadastrada com sucesso.");
-      // limpa só as linhas
       setRows([
         {
           data: new Date().toISOString().slice(0, 10),
@@ -236,7 +221,6 @@ export default function DriverTripForm() {
         </div>
 
         <form className="form driver-trip-form" onSubmit={onSubmit}>
-          {/* Cabeçalho de resumo */}
           <div className="driver-trip-summary-row">
             <label className="driver-field-grow">
               <span>Placa</span>

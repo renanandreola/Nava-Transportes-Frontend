@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import api from "../../../services/api";
 import "./DriverTripList.css";
 
-// util simples
 const n = (v) => (isNaN(Number(v)) ? 0 : Number(v));
 const brCurrency = (v) =>
   n(v).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -12,19 +11,26 @@ export default function DriverTripList() {
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
 
-  // edição
   const [editOpen, setEditOpen] = useState(false);
   const [allowBackdropClose, setAllowBackdropClose] = useState(false);
   const [savingEdit, setSavingEdit] = useState(false);
   const [editError, setEditError] = useState("");
   const [editingTrip, setEditingTrip] = useState(null);
 
-  // campos do modal
   const [fPlate, setFPlate] = useState("");
   const [fKmInicial, setFKmInicial] = useState(0);
   const [fKmFinal, setFKmFinal] = useState(0);
   const [fTotalFrete, setFTotalFrete] = useState(0);
   const [fPremiacao, setFPremiacao] = useState(0);
+
+  const formatDateTime = (v) => {
+    if (!v) return "-";
+    try {
+      return new Date(v).toLocaleString("pt-BR");
+    } catch {
+      return "-";
+    }
+  };
 
   const load = async () => {
     try {
@@ -42,8 +48,6 @@ export default function DriverTripList() {
   useEffect(() => {
     load();
   }, []);
-
-  // ----- editar / deletar -----
 
   const openEditModal = (trip) => {
     setEditingTrip(trip);
@@ -65,7 +69,6 @@ export default function DriverTripList() {
     setEditOpen(false);
   };
 
-  // ESC fecha modal
   useEffect(() => {
     if (!editOpen) return;
     const onKey = (e) => {
@@ -117,8 +120,6 @@ export default function DriverTripList() {
       alert(e2?.response?.data?.message || "Erro ao excluir viagem");
     }
   };
-
-  // ----- render -----
 
   if (loading) {
     return (
@@ -172,7 +173,7 @@ export default function DriverTripList() {
 
                   return (
                     <tr key={t._id}>
-                      <td>{t.trechos?.[0]?.data || "-"}</td>
+                      <td>{formatDateTime(t.trechos?.[0]?.data) || "-"}</td>
                       <td>{t.plate || "-"}</td>
                       <td>{kmIni}</td>
                       <td>{kmFim}</td>

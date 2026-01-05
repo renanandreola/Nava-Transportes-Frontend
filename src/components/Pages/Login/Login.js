@@ -11,7 +11,6 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState("");
 
-  // Checa sessão existente apenas uma vez ao montar
   useEffect(() => {
     let alive = true;
 
@@ -27,7 +26,6 @@ export default function Login() {
           navigate("/driver", { replace: true });
         }
       } catch {
-        // usuário não autenticado -> permanece na tela de login
       }
     })();
 
@@ -43,20 +41,12 @@ export default function Login() {
     setErr("");
     setLoading(true);
     try {
-      // login
-      console.log('opa');
-      
       const resp = await api.post("/auth/login", { email, password });
-
-      // opção A: role vindo do login
       let role = resp?.data?.user?.role;
-
-      // opção B: confirmar com /auth/me
       try {
         const me = await api.get("/auth/me");
         role = me?.data?.user?.role || role;
       } catch {
-        // se /auth/me falhar, segue com o role do login
       }
 
       if (role === "admin") {
@@ -76,7 +66,6 @@ export default function Login() {
 
   return (
     <div className="nava-login">
-      {/* Card central de login */}
       <main className="login-main">
         <div className="nava-card">
           <h1 className="login-title">Entre em sua conta</h1>

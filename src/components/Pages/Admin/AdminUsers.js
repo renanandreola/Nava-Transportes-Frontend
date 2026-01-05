@@ -41,7 +41,7 @@ export default function AdminUsers() {
 
   const openCreateModal = () => {
     setError("");
-    setEditingUser(null);         // modo criação
+    setEditingUser(null);
     setFName("");
     setFEmail("");
     setFPass("");
@@ -53,10 +53,10 @@ export default function AdminUsers() {
 
   const openEditModal = (user) => {
     setError("");
-    setEditingUser(user);         // modo edição
+    setEditingUser(user);
     setFName(user.name || "");
     setFEmail(user.email || "");
-    setFPass("");                 // senha em branco (opcional mudar)
+    setFPass("");
     setOpen(true);
     setAllowBackdropClose(false);
     setTimeout(() => setAllowBackdropClose(true), 150);
@@ -90,16 +90,13 @@ export default function AdminUsers() {
         active: true,
       };
 
-      // se tiver senha preenchida, manda também
       if (fPass) {
         payload.password = fPass;
       }
 
       if (editingUser && editingUser._id) {
-        // atualização
         await api.put(`/admin/users/${editingUser._id}`, payload);
       } else {
-        // criação
         if (!payload.password) {
           setError("Senha é obrigatória para novo usuário.");
           setSaving(false);

@@ -1,199 +1,138 @@
-/* ====== Lista de viagens do motorista ====== */
-
-/* Wrapper leve: apenas para ajustar dentro do layout */
 .driver-trip-list-page {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.driver-trip-list-page .driver-card {
+  padding: 15px;
   width: 100%;
 }
 
-/* Podemos reutilizar .driver-card do home; se quiser algo maior: */
-.driver-trip-list-page .driver-card {
-  /* max-width: 960px; */
-  padding: 25px;
+@media (min-width: 768px) {
+  .driver-trip-list-page .driver-card {
+    padding: 25px;
+  }
 }
 
-/* Cabeçalho da lista */
 .driver-trip-head {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
   border-bottom: 1px solid rgba(31, 41, 55, 0.9);
   padding-bottom: 12px;
   margin-bottom: 16px;
 }
 
 .driver-trip-head h2 {
-  margin: 0 0 4px;
-  font-size: 22px;
+  margin: 0;
+  font-size: clamp(18px, 5vw, 22px);
   font-weight: 600;
 }
 
-.driver-trip-empty {
-  margin: 0;
-  padding: 8px 0;
-  font-size: 13px;
-}
-
-/* Wrapper da tabela (scroll horizontal no mobile) */
 .driver-trip-table-wrap {
   margin-top: 4px;
-  padding: 10px 0 2px;
+  padding: 5px 0;
   border-radius: 10px;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid rgba(55, 65, 81, 0.3);
 }
 
-/* Tabela em cima do Bootstrap */
 .driver-trip-table {
+  width: 100%;
   min-width: 600px;
   font-size: 13px;
+  border-collapse: collapse;
 }
 
 .driver-trip-table thead th {
   font-weight: 500;
   color: #9ca3af;
-  /* color: black; */
   border-bottom: 1px solid rgba(55, 65, 81, 0.9);
   background: #020617;
-}
-
-/* Linhas da tabela (zebra dark) */
-.driver-trip-table tbody tr:nth-child(odd) {
-  background: rgba(15, 23, 42, 0.9);
-}
-
-.driver-trip-table tbody tr:nth-child(even) {
-  background: rgba(17, 24, 39, 0.95);
-}
-
-.driver-trip-table tbody tr:hover {
-  background: rgba(30, 64, 175, 0.25);
+  position: sticky;
+  top: 0;
 }
 
 .driver-trip-table th,
 .driver-trip-table td {
-  padding: 8px 10px;
-  white-space: nowrap;
+  padding: 12px 10px;
+  text-align: left;
 }
 
-.driver-trip-table td {
-  color: #e5e7eb;
-}
-
-/* Responsivo */
-@media (max-width: 640px) {
-  .driver-trip-table {
-    min-width: 520px;
-  }
-}
-
-/* Acessibilidade */
-@media (prefers-reduced-motion: reduce) {
-  .driver-trip-table tbody tr:hover {
-    transition: none !important;
-  }
-}
-
-/* Coluna de ações */
 .driver-trip-actions-col {
-  width: 150px;
+  width: auto;
+  min-width: 120px;
   text-align: right;
 }
 
 .driver-trip-row-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 6px;
-  flex-wrap: wrap;
+  gap: 8px;
 }
 
-.driver-trip-row-actions .btn {
-  padding-inline: 8px;
-}
-
-/* Modal de edição */
 .driver-modal {
   position: fixed;
   inset: 0;
   z-index: 1100;
-  background: rgba(15, 23, 42, 0.45);
-  display: grid;
-  place-items: center;
-  padding: 16px;
-  backdrop-filter: blur(2px);
+  background: rgba(15, 23, 42, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  backdrop-filter: blur(4px);
 }
 
 .driver-modal-card {
   background: #020617;
   border-radius: 16px;
-  border: 1px solid rgba(148, 163, 184, 0.4);
-  box-shadow: 0 22px 60px rgba(15, 23, 42, 0.7);
-  width: min(480px, 100%);
-  padding: 16px 18px;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 20px;
   color: #e5e7eb;
-}
-
-.driver-modal-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-}
-
-.driver-modal-head h3 {
-  margin: 0;
-  font-size: 18px;
-}
-
-.driver-modal-form {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.driver-modal-form .form-field {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  font-size: 13px;
-}
-
-.driver-modal-form .form-field label {
-  font-size: 12px;
-  /* color: #9ca3af; */
-  color: black;
 }
 
 .driver-modal-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
 }
 
-.driver-modal-actions {
-  margin-top: 6px;
-}
-
-/* Reutiliza alerts que você já tem */
-.error-alert {
-  background: rgba(248, 113, 113, 0.1);
-  border: 1px solid rgba(248, 113, 113, 0.7);
-  color: #fecaca;
-  border-radius: 10px;
-  padding: 8px 10px;
-  font-size: 13px;
-  margin-bottom: 10px;
-}
-
-/* Responsivo */
-@media (max-width: 600px) {
-  .driver-trip-actions-col {
-    width: 130px;
-  }
-
-  .driver-trip-row-actions {
-    justify-content: flex-start;
-  }
-
+@media (max-width: 480px) {
   .driver-modal-grid {
     grid-template-columns: 1fr;
   }
+
+  .driver-modal-card {
+    padding: 15px;
+  }
+
+  .driver-trip-row-actions {
+    flex-direction: row;
+  }
+
+  .driver-trip-row-actions .btn {
+    flex: 1;
+    font-size: 11px;
+    padding: 8px 4px;
+  }
+}
+
+.driver-modal-form .form-field input,
+.driver-modal-form .form-field select {
+  width: 100%;
+  height: 40px;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #374151;
+  background: #0f172a;
+  color: white;
 }

@@ -4,8 +4,6 @@ import "./AdminTrips.css";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
-
-// util simples para número e moeda
 const n = (v) => (isNaN(Number(v)) ? 0 : Number(v));
 const brCurrency = (v) =>
   n(v).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -16,25 +14,21 @@ export default function AdminTrips() {
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
 
-  // filtros
   const [driverId, setDriverId] = useState("");
   const [plate, setPlate] = useState("");
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [q, setQ] = useState("");
 
-  // edição
   const [editOpen, setEditOpen] = useState(false);
   const [allowBackdropClose, setAllowBackdropClose] = useState(false);
   const [savingEdit, setSavingEdit] = useState(false);
   const [editError, setEditError] = useState("");
   const [editingTrip, setEditingTrip] = useState(null);
 
-  // detalhes (somente leitura)
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [viewingTrip, setViewingTrip] = useState(null);
 
-  // campos do modal de edição
   const [fDriverId, setFDriverId] = useState("");
   const [fDriverName, setFDriverName] = useState("");
   const [fPlate, setFPlate] = useState("");
@@ -59,7 +53,6 @@ export default function AdminTrips() {
     setMapTrip(null);
   };
 
-  // ESC fecha o modal de mapa também
   useEffect(() => {
     if (!mapOpen) return;
     const onKey = (e) => {
@@ -77,11 +70,9 @@ export default function AdminTrips() {
 
     const doc = new jsPDF({ orientation: "landscape" });
 
-    // Título
     doc.setFontSize(14);
     doc.text("Controles de Saída - Nava Transportes", 14, 14);
 
-    // Linha de filtros usados
     const filtros = [];
     if (driverId) {
       const d = drivers.find((x) => x._id === driverId);
@@ -104,7 +95,6 @@ export default function AdminTrips() {
       28
     );
 
-    // Monta linhas da tabela
     const body = trips.map((t) => {
       const kmIni = n(t.kmInicial);
       const kmFim = n(t.kmFinal);
@@ -130,7 +120,6 @@ export default function AdminTrips() {
       ];
     });
 
-    // 👉 aqui é a mudança importante
     autoTable(doc, {
       startY: 34,
       head: [[
@@ -161,7 +150,6 @@ export default function AdminTrips() {
       });
       setDrivers(data.items || []);
     } catch {
-      // se falhar, só não mostra o select de motorista
     }
   };
 
@@ -227,8 +215,6 @@ export default function AdminTrips() {
     }
   };
 
-  // ---------- EDIÇÃO ----------
-
   const openEditModal = (trip) => {
     setEditError("");
     setEditingTrip(trip || null);
@@ -251,7 +237,6 @@ export default function AdminTrips() {
     setEditOpen(false);
   };
 
-  // atualizar nome do driver ao trocar no select
   useEffect(() => {
     if (!fDriverId) {
       return;
@@ -262,7 +247,6 @@ export default function AdminTrips() {
     }
   }, [fDriverId, drivers]);
 
-  // ESC fecha modal de edição
   useEffect(() => {
     if (!editOpen) return;
     const onKey = (e) => {
@@ -317,8 +301,6 @@ export default function AdminTrips() {
     }
   };
 
-  // ---------- DETALHES (VER TUDO) ----------
-
   const openDetailsModal = (trip) => {
     setViewingTrip(trip || null);
     setDetailsOpen(true);
@@ -330,7 +312,6 @@ export default function AdminTrips() {
     setDetailsOpen(false);
   };
 
-  // ESC fecha modal de detalhes
   useEffect(() => {
     if (!detailsOpen) return;
     const onKey = (e) => {
@@ -536,8 +517,6 @@ export default function AdminTrips() {
     );
   };
 
-  // ---------- RENDER PRINCIPAL ----------
-
   return (
     <div className="card admin-trips-card">
       <div className="card-head row">
@@ -678,7 +657,7 @@ export default function AdminTrips() {
                 <th>Total Frete</th>
                 <th>Total Pago</th>
                 <th>Premiação</th>
-                <th>Local</th> {/* 👈 nova coluna */}
+                <th>Local</th>
                 <th>Criado em</th>
                 <th className="admin-trips-actions-col">Ações</th>
               </tr>

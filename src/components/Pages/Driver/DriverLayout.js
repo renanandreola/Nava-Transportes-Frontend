@@ -17,7 +17,6 @@ export default function DriverLayout() {
     })();
   }, []);
 
-  // Fecha menu com ESC
   useEffect(() => {
     const onKey = (e) => {
       if (e.key === "Escape") setMenuOpen(false);
@@ -33,7 +32,6 @@ export default function DriverLayout() {
 
   return (
     <div className="drv-shell">
-      {/* Backdrop mobile */}
       {menuOpen && (
         <div className="drv-backdrop" onClick={() => setMenuOpen(false)} />
       )}
@@ -96,7 +94,6 @@ export default function DriverLayout() {
         </div>
       </aside>
 
-      {/* Conteúdo principal */}
       <main className="drv-main">
         <header className="drv-header">
           <div className="drv-h-left">

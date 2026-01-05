@@ -1,17 +1,13 @@
-/* ====== Formulário de Controle de Saída ====== */
-
 .driver-trip-form-page {
   width: 100%;
 }
 
 .driver-trip-form-card {
   width: 100%;
-  /* max-width: 1120px;
-  margin: 0 auto; */
-  padding: 25px;
+  padding: 20px;
+  box-sizing: border-box;
 }
 
-/* Cabeçalho do form */
 .driver-trip-header {
   border-bottom: 1px solid rgba(31, 41, 55, 0.9);
   padding-bottom: 12px;
@@ -20,189 +16,118 @@
 
 .driver-trip-header h2 {
   margin: 0 0 4px;
-  font-size: 22px;
+  font-size: 1.4rem;
   font-weight: 600;
 }
 
-/* Form principal */
 .driver-trip-form {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
 }
 
-/* Linha de resumo superior */
 .driver-trip-summary-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
 }
 
 .driver-trip-summary-row label {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
   font-size: 13px;
   color: #e5e7eb;
 }
 
-.driver-trip-summary-row span {
-  font-size: 12px;
-  /* color: #9ca3af; */
-  color: black;
-}
-
-.driver-field-grow {
-  flex: 1;
-  min-width: 180px;
-}
-
-.driver-trip-summary-row .inp {
-  width: 100%;
+.driver-trip-summary-row .inp, 
+.driver-trip-totals .inp {
   width: 100%;
   border: var(--bs-border-width) solid var(--bs-border-color);
   border-radius: var(--bs-border-radius);
-  height: 38px;
-  padding: 10px;
+  height: 40px;
+  padding: 8px 12px;
+  background-color: #fff;
 }
 
-/* Tabela de trechos */
 .driver-trip-form-table-wrap {
+  width: 100%;
   border-radius: 10px;
   overflow-x: auto;
-  padding: 8px 0 2px;
-  background: transparent;
+  -webkit-overflow-scrolling: touch;
+  background: rgba(15, 23, 42, 0.5);
+  margin-top: 10px;
 }
 
 .driver-trip-form-table {
-  min-width: 960px;
-  font-size: 13px;
+  width: 100%;
+  min-width: 800px;
+  border-collapse: collapse;
 }
 
-.driver-trip-form-table th,
-.driver-trip-form-table td {
-  padding: 6px 8px;
-  text-align: left;
-}
-
-.driver-trip-form-table thead th {
-  font-weight: 500;
-  color: #9ca3af;
-  /* color: black; */
-  border-bottom: 1px solid rgba(55, 65, 81, 0.9);
+.driver-trip-form-table th {
   background: #020617;
-}
-
-.driver-trip-form-table tbody tr:nth-child(odd) {
-  background: rgba(15, 23, 42, 0.9);
-}
-
-.driver-trip-form-table tbody tr:nth-child(even) {
-  background: rgba(17, 24, 39, 0.95);
-}
-
-.driver-trip-form-table tbody tr:hover {
-  background: rgba(30, 64, 175, 0.25);
+  color: #9ca3af;
+  padding: 12px 10px;
+  font-weight: 500;
+  text-align: left;
+  white-space: nowrap;
 }
 
 .driver-trip-form-table td {
+  padding: 10px;
   color: #e5e7eb;
+  vertical-align: middle;
 }
 
 .driver-trip-form-table .inp {
-  min-width: 0;
-  font-size: 12px;
-  padding: 4px 8px;
-  border-radius: 999px;
-  border: 1px solid rgba(148, 163, 184, 0.7);
+  width: 100%;
+  min-width: 80px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(148, 163, 184, 0.4);
 }
 
-/* Botão de remover linha */
-.driver-row-remove {
-  font-size: 11px;
-  padding: 4px 10px;
-}
-
-/* Linha de totais das linhas */
-.driver-trip-lines-summary {
-  margin-top: 6px;
-  flex-wrap: wrap;
-}
-
-.driver-trip-lines-summary .muted {
-  font-size: 12px;
-}
-
-/* Separador */
-.driver-trip-separator {
-  border: none;
-  border-top: 1px solid rgba(31, 41, 55, 0.9);
-  margin: 10px 0 8px;
-}
-
-/* Totais finais */
 .driver-trip-totals {
-  flex-wrap: wrap;
-  gap: 10px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 15px;
+  margin-top: 10px;
 }
 
-.driver-trip-totals label {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  font-size: 13px;
-  color: #e5e7eb;
-}
-
-.driver-trip-totals span {
-  font-size: 12px;
-  /* color: #9ca3af; */
-  color: black;
-}
-
-.driver-trip-totals .inp {
-  width: 100%;
-  min-width: 150px;
-  width: 100%;
-  border: var(--bs-border-width) solid var(--bs-border-color);
-  border-radius: var(--bs-border-radius);
-  height: 38px;
-  padding: 10px;
-}
-
-/* Ações finais */
 .driver-trip-actions {
-  margin-top: 4px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
 }
 
-/* Responsivo */
-@media (max-width: 900px) {
+@media (max-width: 600px) {
   .driver-trip-form-card {
-    padding-inline: 4px;
+    padding: 15px;
   }
 
-  .driver-trip-summary-row {
+  .driver-trip-header h2 {
+    font-size: 1.2rem;
+  }
+
+  .driver-trip-actions {
     flex-direction: column;
   }
-}
 
-@media (max-width: 640px) {
-  .driver-trip-form-table {
-    min-width: 720px;
+  .driver-trip-actions button {
+    width: 100%;
+    padding: 12px;
   }
-
-  .driver-trip-totals .inp {
-    min-width: 100%;
-    border: var(--bs-border-width) solid var(--bs-border-color);
-    border-radius: var(--bs-border-radius);
-    height: 38px;
-    padding: 10px;
+  
+  .driver-trip-form-table-wrap {
+    border: 1px solid #374151;
   }
 }
 
-/* Acessibilidade */
 @media (prefers-reduced-motion: reduce) {
-  .driver-trip-form-table tbody tr:hover {
+  * {
     transition: none !important;
+    animation: none !important;
   }
 }

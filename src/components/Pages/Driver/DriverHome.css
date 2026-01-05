@@ -1,20 +1,14 @@
-/* ====== Área do Motorista - Home ====== */
-
-/* Wrapper leve: apenas ocupa a largura disponível do conteúdo */
 .driver-page {
   width: 100%;
 }
 
-/* Card principal centralizado dentro da área de conteúdo */
 .driver-card {
   width: 100%;
-  /* max-width: 720px; */
   margin: 0 auto;
   color: #e5e7eb;
   padding: 25px;
 }
 
-/* Cabeçalho do card */
 .driver-card-head {
   display: flex;
   align-items: center;
@@ -31,13 +25,11 @@
   font-weight: 600;
 }
 
-/* Texto secundário */
 .muted {
   color: #9ca3af;
   font-size: 13px;
 }
 
-/* Corpo do card */
 .driver-card-body {
   display: flex;
   flex-direction: column;
@@ -47,25 +39,21 @@
 .driver-helper {
   margin: 0;
   font-size: 13px;
-  /* color: #9ca3af; */
-  color: black;
+  color: #9ca3af;
 }
 
-/* Botão de sair */
 .driver-logout-btn {
   border-radius: 999px;
   padding-inline: 14px;
   font-size: 12px;
 }
 
-/* Área dos botões principais */
 .driver-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
 }
 
-/* Botão principal grande */
 .driver-main-btn {
   min-width: 220px;
   border-radius: 999px;
@@ -74,7 +62,6 @@
   box-shadow: 0 14px 32px rgba(37, 99, 235, 0.6);
 }
 
-/* Botão secundário */
 .driver-secondary-btn {
   min-width: 180px;
   border-radius: 999px;
@@ -89,7 +76,6 @@
   border-color: #e5e7eb;
 }
 
-/* Alerts reaproveitados, caso você use na home */
 .error-alert {
   background: rgba(248, 113, 113, 0.1);
   border: 1px solid rgba(248, 113, 113, 0.7);
@@ -110,7 +96,6 @@
   margin-bottom: 10px;
 }
 
-/* ====== Responsivo ====== */
 @media (max-width: 640px) {
   .driver-card {
     max-width: 100%;
