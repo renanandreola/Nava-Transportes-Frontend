@@ -4,7 +4,7 @@ const baseURL =
   window.location.hostname.includes("localhost") ||
   window.location.hostname === "127.0.0.1"
     ? "http://localhost:3000/nava"
-    : "https://SEU_BACKEND_PRODUCAO/nava";
+    : "https://nava-backend-a313880c75d2.herokuapp.com/nava";
 
 const api = axios.create({
   baseURL,
