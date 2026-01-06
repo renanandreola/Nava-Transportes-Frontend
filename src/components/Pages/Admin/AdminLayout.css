@@ -118,7 +118,7 @@
   padding: 7px 14px;
   border-radius: 999px;
   cursor: pointer;
-  /* color: var(--adm-ink); */
+  color: var(--adm-ink);
   font-size: 13px;
 }
 
