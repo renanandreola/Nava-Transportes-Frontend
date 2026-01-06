@@ -20,11 +20,18 @@ function RouteComponent() {
     <BrowserRouter>
       <ScrollToTop />
       <Routes>
+        {/* Público */}
         <Route path="/" element={<Login />} />
-        <Route path="/home" element={<Navigate to="/driver" replace />} />
 
-        {/* Área Driver (usuário comum) */}
-        <Route path="/driver" element={<DriverLayout />}>
+        {/* Área Driver */}
+        <Route
+          path="/driver"
+          element={
+            <RequireRole role="driver">
+              <DriverLayout />
+            </RequireRole>
+          }
+        >
           <Route index element={<DriverHome />} />
           <Route path="trips/new" element={<DriverTripForm />} />
           <Route path="trips" element={<DriverTripList />} />
@@ -44,30 +51,12 @@ function RouteComponent() {
           <Route path="trips" element={<AdminTrips />} />
         </Route>
 
-        <Route
-          path="/driver/trips/new"
-          element={
-            <RequireRole role="driver">
-              <DriverTripForm />
-            </RequireRole>
-          }
-        />
-
-        <Route
-          path="/driver/trips"
-          element={
-            <RequireRole role="driver">
-              <DriverTripList />
-            </RequireRole>
-          }
-        />
-
-        {/* <Route path="/admin/analytics" element={<AdminAnalytics />} /> */}
-
+        {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );
 }
+
 
 export default RouteComponent;
