@@ -7,7 +7,7 @@ export default function DriverHome() {
   const navigate = useNavigate();
 
   const logout = async () => {
-    await api.post("/auth/logout");
+    await api.post("/auth/logout", {}, { withCredentials: true });
     navigate("/", { replace: true });
   };
 

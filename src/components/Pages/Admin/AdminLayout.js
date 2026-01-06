@@ -8,7 +8,7 @@ export default function AdminLayout() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const logout = async () => {
-    await api.post("/auth/logout", { withCredentials: true });
+    await api.post("/auth/logout", {}, { withCredentials: true });
     navigate("/", { replace: true });
   };
 
