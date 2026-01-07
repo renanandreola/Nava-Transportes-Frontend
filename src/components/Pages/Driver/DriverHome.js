@@ -2,14 +2,20 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../../services/api";
 import "./DriverHome.css";
+import { tokenService } from "../../../services/tokenService";
 
 export default function DriverHome() {
   const navigate = useNavigate();
 
-  const logout = async () => {
-    await api.post("/auth/logout", {}, { withCredentials: true });
+  const logout = () => {
+    tokenService.clear();
     navigate("/", { replace: true });
   };
+
+  // const logout = async () => {
+  //   await api.post("/auth/logout", {}, { withCredentials: true });
+  //   navigate("/", { replace: true });
+  // };
 
   return (
     <div className="driver-page">

@@ -2,15 +2,21 @@ import React, { useEffect, useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import api from "../../../services/api";
 import "./AdminLayout.css";
+import { tokenService } from "../../../services/tokenService";
 
 export default function AdminLayout() {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const logout = async () => {
-    await api.post("/auth/logout", {}, { withCredentials: true });
+  const logout = () => {
+    tokenService.clear();
     navigate("/", { replace: true });
   };
+
+  // const logout = async () => {
+  //   await api.post("/auth/logout", {}, { withCredentials: true });
+  //   navigate("/", { replace: true });
+  // };
 
   useEffect(() => {
     const onKey = (e) => {

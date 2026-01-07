@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import api from "../../../services/api";
 import "./DriverLayout.css";
+import { tokenService } from "../../../services/tokenService";
 
 export default function DriverLayout() {
   const navigate = useNavigate();
@@ -25,10 +26,15 @@ export default function DriverLayout() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  const logout = async () => {
-    await api.post("/auth/logout", {}, { withCredentials: true });
+  const logout = () => {
+    tokenService.clear();
     navigate("/", { replace: true });
   };
+
+  // const logout = async () => {
+  //   await api.post("/auth/logout", {}, { withCredentials: true });
+  //   navigate("/", { replace: true });
+  // };
 
   return (
     <div className="drv-shell">

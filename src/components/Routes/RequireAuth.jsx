@@ -5,14 +5,14 @@ import api from "../../services/api";
 export default function RequireAuth({ children }) {
   const [loading, setLoading] = useState(true);
   const [authorized, setAuthorized] = useState(false);
-  const triedRef = useRef(false); // evita corridas
+  const triedRef = useRef(false);
 
   useEffect(() => {
     let alive = true;
 
     (async () => {
       try {
-        const { data } = await api.get("/auth/me", { withCredentials: true });
+        const { data } = await api.get("/auth/me");
         if (alive && data?.user) {
           setAuthorized(true);
         } else {
@@ -33,10 +33,11 @@ export default function RequireAuth({ children }) {
     };
   }, []);
 
-  // Enquanto não terminou a checagem, não decide rota
-  if (loading || !triedRef.current) return null; // ou um spinner
+  if (loading || !triedRef.current) return null;
 
-  if (!authorized) return <Navigate to="/" replace />;
+  if (!authorized) {
+    return <Navigate to="/" replace />;
+  }
 
   return children;
 }

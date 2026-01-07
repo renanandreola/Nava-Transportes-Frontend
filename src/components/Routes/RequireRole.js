@@ -11,16 +11,14 @@ export default function RequireRole({ role, children }) {
 
     (async () => {
       try {
-        const { data } = await api.get("/auth/me", {
-          withCredentials: true,
-        });
+        const { data } = await api.get("/auth/me");
 
         if (alive && data?.user?.role === role) {
           setAuthorized(true);
         } else {
           setAuthorized(false);
         }
-      } catch (err) {
+      } catch {
         if (alive) setAuthorized(false);
       } finally {
         if (alive) setLoading(false);

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../../services/api";
 import "./Login.css";
+import { tokenService } from "../../../services/tokenService";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -12,6 +13,9 @@ export default function Login() {
   const [err, setErr] = useState("");
 
   useEffect(() => {
+    const token = tokenService.getAccess();
+    if (!token) return;
+
     let alive = true;
 
     (async () => {
@@ -19,13 +23,13 @@ export default function Login() {
         const { data } = await api.get("/auth/me");
         if (!alive || !data?.user) return;
 
-        const role = data.user.role;
-        if (role === "admin") {
+        if (data.user.role === "admin") {
           navigate("/admin", { replace: true });
         } else {
           navigate("/driver", { replace: true });
         }
       } catch {
+        tokenService.clear();
       }
     })();
 
@@ -34,32 +38,80 @@ export default function Login() {
     };
   }, [navigate]);
 
+  // useEffect(() => {
+  //   let alive = true;
+
+  //   (async () => {
+  //     try {
+  //       const { data } = await api.get("/auth/me");
+  //       if (!alive || !data?.user) return;
+
+  //       const role = data.user.role;
+  //       if (role === "admin") {
+  //         navigate("/admin", { replace: true });
+  //       } else {
+  //         navigate("/driver", { replace: true });
+  //       }
+  //     } catch {
+  //     }
+  //   })();
+
+  //   return () => {
+  //     alive = false;
+  //   };
+  // }, [navigate]);
+
   const onSubmit = async (e) => {
     e.preventDefault();
-    if (loading) return;
-
-    setErr("");
     setLoading(true);
-    try {
-      const resp = await api.post("/auth/login", { email, password });
-      let role = resp?.data?.user?.role;
-      try {
-        const me = await api.get("/auth/me");
-        role = me?.data?.user?.role || role;
-      } catch {
-      }
+    setErr("");
 
-      if (role === "admin") {
+    try {
+      const { data } = await api.post("/auth/login", {
+        email,
+        password,
+      });
+
+      tokenService.setTokens(data);
+
+      if (data.user.role === "admin") {
         navigate("/admin", { replace: true });
       } else {
         navigate("/driver", { replace: true });
       }
-    } catch (error) {
-      setErr(error?.response?.data?.message || "Falha ao autenticar.");
+    } catch (err) {
+      setErr("Usuário ou senha inválidos");
     } finally {
       setLoading(false);
     }
   };
+
+  // const onSubmit = async (e) => {
+  //   e.preventDefault();
+  //   if (loading) return;
+
+  //   setErr("");
+  //   setLoading(true);
+  //   try {
+  //     const resp = await api.post("/auth/login", { email, password });
+  //     let role = resp?.data?.user?.role;
+  //     try {
+  //       const me = await api.get("/auth/me");
+  //       role = me?.data?.user?.role || role;
+  //     } catch {
+  //     }
+
+  //     if (role === "admin") {
+  //       navigate("/admin", { replace: true });
+  //     } else {
+  //       navigate("/driver", { replace: true });
+  //     }
+  //   } catch (error) {
+  //     setErr(error?.response?.data?.message || "Falha ao autenticar.");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   const canSubmit = email.trim() && password.trim() && !loading;
   const year = new Date().getFullYear();
