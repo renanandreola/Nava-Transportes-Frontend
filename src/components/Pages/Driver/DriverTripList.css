@@ -8,6 +8,13 @@
   width: 100%;
 }
 
+@media (max-width: 768px) {
+  .driver-trip-list-page .driver-card {
+    padding: 25px;
+    width: 94vw;
+  }
+}
+
 @media (min-width: 768px) {
   .driver-trip-list-page .driver-card {
     padding: 25px;

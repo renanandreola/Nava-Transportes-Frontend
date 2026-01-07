@@ -105,6 +105,7 @@
 @media (max-width: 600px) {
   .driver-trip-form-card {
     padding: 15px;
+    width: 94vw;
   }
 
   .driver-trip-header h2 {
