@@ -28,7 +28,7 @@ export default function DriverHome() {
             </p>
           </div>
           <button
-            className="btn btn-outline-light btn-sm driver-logout-btn"
+            className="btn btn-secondary btn-sm driver-logout-btn w-100"
             type="button"
             onClick={logout}
           >

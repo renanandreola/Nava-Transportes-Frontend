@@ -255,6 +255,8 @@ export default function AdminUsers() {
               </button>
             </div>
 
+            <hr></hr>
+
             <form className="users-form" onSubmit={handleSubmit}>
               <div className="form-field">
                 <label>Nome</label>
@@ -299,10 +301,12 @@ export default function AdminUsers() {
               </div>
 
               {error && <div className="alert error-alert">{error}</div>}
+            
+              <hr></hr>
 
-              <div className="row end gap users-modal-actions">
+              <div className="users-modal-actions">
                 <button
-                  className="btn btn-outline-light btn-sm"
+                  className="btn btn-outline-light"
                   type="button"
                   onClick={closeModal}
                   disabled={saving}
@@ -310,7 +314,7 @@ export default function AdminUsers() {
                   Cancelar
                 </button>
                 <button
-                  className="btn btn-primary btn-sm"
+                  className="btn btn-primary"
                   type="submit"
                   disabled={saving}
                 >

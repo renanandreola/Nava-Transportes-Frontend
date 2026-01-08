@@ -41,7 +41,7 @@
 
 .driver-trip-table-wrap {
   margin-top: 4px;
-  padding: 5px 0;
+  /* padding: 5px 0; */
   border-radius: 10px;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
@@ -73,12 +73,12 @@
 .driver-trip-actions-col {
   width: auto;
   min-width: 120px;
-  text-align: right;
+  text-align: center!important;
 }
 
 .driver-trip-row-actions {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   gap: 8px;
 }
 
@@ -111,6 +111,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
+  margin-bottom: 25px;
 }
 
 @media (max-width: 480px) {
@@ -142,4 +143,22 @@
   border: 1px solid #374151;
   background: #0f172a;
   color: white;
+}
+
+.driver-modal-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.driver-modal-head h3{
+  margin: 0;
+  font-size: 18px;
+}
+
+.driver-modal-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }

@@ -233,6 +233,8 @@ export default function DriverTripList() {
               </button>
             </div>
 
+            <hr></hr>
+
             <form className="driver-modal-form" onSubmit={submitEdit}>
               <div className="form-field">
                 <label>Placa</label>
@@ -292,9 +294,11 @@ export default function DriverTripList() {
                 <div className="alert error-alert">{editError}</div>
               )}
 
-              <div className="row end gap driver-modal-actions">
+              <hr></hr>
+
+              <div className="driver-modal-actions">
                 <button
-                  className="btn btn-outline-light btn-sm"
+                  className="btn btn-outline-light"
                   type="button"
                   onClick={closeEditModal}
                   disabled={savingEdit}
@@ -302,7 +306,7 @@ export default function DriverTripList() {
                   Cancelar
                 </button>
                 <button
-                  className="btn btn-primary btn-sm"
+                  className="btn btn-primary"
                   type="submit"
                   disabled={savingEdit}
                 >

@@ -96,6 +96,10 @@
   margin-bottom: 10px;
 }
 
+.driver-logout-btn {
+  visibility: hidden;
+}
+
 @media (max-width: 640px) {
   .driver-card {
     max-width: 100%;
@@ -115,5 +119,9 @@
   .driver-main-btn,
   .driver-secondary-btn {
     width: 100%;
+  }
+
+  .driver-logout-btn {
+    visibility: visible;
   }
 }

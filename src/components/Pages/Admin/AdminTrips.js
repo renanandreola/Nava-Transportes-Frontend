@@ -531,7 +531,7 @@ export default function AdminTrips() {
         <div className="row gap">
           <button
             type="button"
-            className="btn"
+            className="btn btn-primary"
             onClick={fetchTrips}
             disabled={loading}
           >
@@ -751,6 +751,8 @@ export default function AdminTrips() {
                 Fechar
               </button>
             </div>
+            
+            <hr></hr>
 
             <form className="admin-trips-form" onSubmit={submitEdit}>
               <div className="form-field">
@@ -839,9 +841,11 @@ export default function AdminTrips() {
                 <div className="alert error-alert">{editError}</div>
               )}
 
-              <div className="row end gap admin-trips-modal-actions">
+              <hr></hr>
+
+              <div className="admin-trips-modal-actions">
                 <button
-                  className="btn btn-outline-light btn-sm"
+                  className="btn btn-outline-light"
                   type="button"
                   onClick={closeEditModal}
                   disabled={savingEdit}
@@ -849,7 +853,7 @@ export default function AdminTrips() {
                   Cancelar
                 </button>
                 <button
-                  className="btn btn-primary btn-sm"
+                  className="btn btn-primary"
                   type="submit"
                   disabled={savingEdit}
                 >

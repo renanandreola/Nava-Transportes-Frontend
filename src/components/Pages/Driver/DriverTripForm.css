@@ -37,7 +37,7 @@
   flex-direction: column;
   gap: 6px;
   font-size: 13px;
-  color: #e5e7eb;
+  /* color: #e5e7eb; */
 }
 
 .driver-trip-summary-row .inp, 
@@ -69,7 +69,8 @@
   background: #020617;
   color: #9ca3af;
   padding: 12px 10px;
-  font-weight: 500;
+  font-weight: normal;
+  font-size: 13px;
   text-align: left;
   white-space: nowrap;
 }
@@ -93,6 +94,7 @@
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 15px;
   margin-top: 10px;
+  font-size: 13px;
 }
 
 .driver-trip-actions {

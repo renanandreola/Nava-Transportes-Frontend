@@ -61,7 +61,7 @@
 
 .users-table-wrap {
   margin-top: 4px;
-  padding: 10px 0 2px;
+  /* padding: 10px 0 2px; */
   border-radius: 10px;
   overflow-x: auto;
 }
@@ -107,7 +107,7 @@
 
 .users-actions-col {
   width: 150px;
-  text-align: right;
+  text-align: center;
 }
 
 .users-row-actions {
@@ -192,6 +192,9 @@
 
 .users-modal-actions {
   margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 
 .error-alert {
@@ -214,7 +217,7 @@
   }
 
   .users-row-actions {
-    justify-content: flex-start;
+    justify-content: center;
   }
 
   .admin-modal-card {
