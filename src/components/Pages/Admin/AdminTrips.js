@@ -33,9 +33,9 @@ export default function AdminTrips() {
   const [fDriverName, setFDriverName] = useState("");
   const [fPlate, setFPlate] = useState("");
   const [fTotalFrete, setFTotalFrete] = useState(0);
-  const [fTotalPago, setFTotalPago] = useState(0);
-  const [fPremiacao, setFPremiacao] = useState(0);
-  const [fTotalAssinado, setFTotalAssinado] = useState(0);
+  // const [fTotalPago, setFTotalPago] = useState(0);
+const [fPremiacaoValor, setFPremiacaoValor] = useState(0);
+  // const [fTotalAssinado, setFTotalAssinado] = useState(0);
 
   const [mapOpen, setMapOpen] = useState(false);
   const [mapTrip, setMapTrip] = useState(null);
@@ -113,9 +113,9 @@ export default function AdminTrips() {
         kmFim || "-",
         kmRodado || "-",
         brCurrency(t.totalDoFrete || t.totalFrete),
-        brCurrency(t.totalPago),
-        brCurrency(t.premiacao),
-        brCurrency(t.totalAssinado),
+        // brCurrency(t.totalPago),
+        `${brCurrency(t.premiacaoValor || 0)} (${t.premiacaoPercentual || 0}%)`,
+        // brCurrency(t.totalAssinado),
         formatDateTime(t.createdAt),
       ];
     });
@@ -130,9 +130,9 @@ export default function AdminTrips() {
         "KM Final",
         "KM Rodado",
         "Total Frete",
-        "Total Pago",
+        // "Total Pago",
         "Premiação",
-        "Total Assinado",
+        // "Total Assinado",
         "Criado em",
       ]],
       body,
@@ -223,9 +223,9 @@ export default function AdminTrips() {
     setFDriverName(trip.driverName || "");
     setFPlate(trip.plate || "");
     setFTotalFrete(trip.totalDoFrete || trip.totalFrete || 0);
-    setFTotalPago(trip.totalPago || 0);
-    setFPremiacao(trip.premiacao || 0);
-    setFTotalAssinado(trip.totalAssinado || 0);
+    // setFTotalPago(trip.totalPago || 0);
+    setFPremiacaoValor(trip.premiacaoValor || 0);
+    // setFTotalAssinado(trip.totalAssinado || 0);
 
     setEditOpen(true);
     setAllowBackdropClose(false);
@@ -269,9 +269,9 @@ export default function AdminTrips() {
         driverName: fDriverName || undefined,
         plate: fPlate.trim(),
         totalDoFrete: n(fTotalFrete),
-        totalPago: n(fTotalPago),
-        premiacao: n(fPremiacao),
-        totalAssinado: n(fTotalAssinado),
+        // totalPago: n(fTotalPago),
+        premiacaoValor: n(fPremiacaoValor),
+        // totalAssinado: n(fTotalAssinado),
       };
 
       await api.put(`/admin/trips/${editingTrip._id}`, payload);
@@ -409,20 +409,23 @@ export default function AdminTrips() {
                   <span>Total do Frete</span>
                   <strong>{brCurrency(t.totalDoFrete || t.totalFrete)}</strong>
                 </div>
-                <div>
+                {/* <div>
                   <span>Total Pago</span>
                   <strong>{brCurrency(t.totalPago)}</strong>
-                </div>
+                </div> */}
               </div>
               <div className="details-kv">
                 <div>
                   <span>Premiação</span>
-                  <strong>{brCurrency(t.premiacao)}</strong>
+                  <strong>
+                    {brCurrency(t.premiacaoValor || 0)}
+                    <span className="muted"> ({t.premiacaoPercentual || 0}%)</span>
+                  </strong>
                 </div>
-                <div>
+                {/* <div>
                   <span>Total Assinado</span>
                   <strong>{brCurrency(t.totalAssinado)}</strong>
-                </div>
+                </div> */}
               </div>
 
               <p className="muted small created-at">
@@ -477,7 +480,7 @@ export default function AdminTrips() {
                       <th>Posto</th>
                       <th>Litros</th>
                       <th>Média</th>
-                      <th>Assinador</th>
+                      {/* <th>Assinador</th> */}
                       <th>Pago?</th>
                     </tr>
                   </thead>
@@ -502,7 +505,7 @@ export default function AdminTrips() {
                           <td>{r.posto || "-"}</td>
                           <td>{r.litros || 0}</td>
                           <td>{r.mediaTrecho || 0}</td>
-                          <td>{r.assinador || "-"}</td>
+                          {/* <td>{r.assinador || "-"}</td> */}
                           <td>{r.pago ? "Sim" : "Não"}</td>
                         </tr>
                       );
@@ -655,7 +658,7 @@ export default function AdminTrips() {
                 <th>KM Final</th>
                 <th>KM Rodado</th>
                 <th>Total Frete</th>
-                <th>Total Pago</th>
+                {/* <th>Total Pago</th> */}
                 <th>Premiação</th>
                 <th>Local</th>
                 <th>Criado em</th>
@@ -684,8 +687,11 @@ export default function AdminTrips() {
                     <td>{kmFim || "-"}</td>
                     <td>{kmRodado || "-"}</td>
                     <td>{brCurrency(t.totalDoFrete || t.totalFrete)}</td>
-                    <td>{brCurrency(t.totalPago)}</td>
-                    <td>{brCurrency(t.premiacao)}</td>
+                    {/* <td>{brCurrency(t.totalPago)}</td> */}
+                    <td>
+                      {brCurrency(t.premiacaoValor || 0)}
+                      <span className="muted"> ({t.premiacaoPercentual || 0}%)</span>
+                    </td>
                     <td>
                       {hasCoords ? (
                         <button
@@ -803,7 +809,7 @@ export default function AdminTrips() {
                   />
                 </div>
 
-                <div className="form-field">
+                {/* <div className="form-field">
                   <label>Total Pago</label>
                   <input
                     className="form-control"
@@ -812,19 +818,19 @@ export default function AdminTrips() {
                     value={fTotalPago}
                     onChange={(e) => setFTotalPago(e.target.value)}
                   />
-                </div>
+                </div> */}
 
                 <div className="form-field">
-                  <label>Premiação</label>
+                  <label>Premiação (R$)</label>
                   <input
                     className="form-control"
                     type="number"
                     step="0.01"
-                    value={fPremiacao}
-                    onChange={(e) => setFPremiacao(e.target.value)}
+                    value={fPremiacaoValor}
+                    onChange={(e) => setFPremiacaoValor(e.target.value)}
                   />
                 </div>
-
+{/* 
                 <div className="form-field">
                   <label>Total Assinado</label>
                   <input
@@ -834,7 +840,7 @@ export default function AdminTrips() {
                     value={fTotalAssinado}
                     onChange={(e) => setFTotalAssinado(e.target.value)}
                   />
-                </div>
+                </div> */}
               </div>
 
               {editError && (

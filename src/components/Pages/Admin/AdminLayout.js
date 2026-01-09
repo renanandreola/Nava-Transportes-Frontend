@@ -70,15 +70,15 @@ export default function AdminLayout() {
             <span>🚚</span> Controles de Saída
           </NavLink>
 
-          {/* <div className="nav-section">Análises</div>
+          <div className="nav-section">Pagamentos</div>
 
           <NavLink
-            to="/admin/analytics"
+            to="/admin/payments"
             className="nav-item"
             onClick={() => setMenuOpen(false)}
           >
-            <span>📈</span> Indicadores
-          </NavLink> */}
+            <span>📈</span> Pagamentos PIX
+          </NavLink>
         </nav>
 
         <div className="drv-aside-foot">

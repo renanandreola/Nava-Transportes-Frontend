@@ -162,7 +162,7 @@ export default function DriverTripList() {
                   <th>KM Rodado</th>
                   <th>Total Frete</th>
                   <th>Premiação</th>
-                  <th className="driver-trip-actions-col">Ações</th>
+                  {/* <th className="driver-trip-actions-col">Ações</th> */}
                 </tr>
               </thead>
               <tbody>
@@ -179,8 +179,8 @@ export default function DriverTripList() {
                       <td>{kmFim}</td>
                       <td>{kmRodado}</td>
                       <td>{brCurrency(t.totalDoFrete || 0)}</td>
-                      <td>{brCurrency(t.premiacao || 0)}</td>
-                      <td className="driver-trip-row-actions">
+                      <td>{brCurrency(t.premiacaoValor || 0)}</td>
+                      {/* <td className="driver-trip-row-actions">
                         <button
                           type="button"
                           className="btn btn-sm btn-outline-primary"
@@ -195,7 +195,7 @@ export default function DriverTripList() {
                         >
                           Excluir
                         </button>
-                      </td>
+                      </td> */}
                     </tr>
                   );
                 })}
@@ -206,7 +206,7 @@ export default function DriverTripList() {
       </div>
 
       {/* Modal de edição */}
-      {editOpen && (
+      {/* {editOpen && (
         <div
           className="driver-modal"
           role="dialog"
@@ -316,7 +316,7 @@ export default function DriverTripList() {
             </form>
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 }

@@ -13,7 +13,7 @@ import DriverLayout from "../Pages/Driver/DriverLayout";
 import DriverHome from "../Pages/Driver/DriverHome";
 import DriverTripForm from "../Pages/Driver/DriverTripForm";
 import DriverTripList from "../Pages/Driver/DriverTripList";
-// import AdminAnalytics from "../Pages/Admin/AdminAnalytics";
+import AdminPayments from "../Pages/Admin/AdminPayments";
 
 function RouteComponent() {
   return (
@@ -49,6 +49,7 @@ function RouteComponent() {
           <Route index element={<AdminDashboard />} />
           <Route path="users" element={<AdminUsers />} />
           <Route path="trips" element={<AdminTrips />} />
+          <Route path="payments" element={<AdminPayments />} />
         </Route>
 
         {/* Fallback */}

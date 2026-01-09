@@ -230,3 +230,21 @@
     transition: none !important;
   }
 }
+
+.percent-input {
+  position: relative;
+}
+
+.percent-input input {
+  padding-right: 36px;
+}
+
+.percent-suffix {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9ca3af;
+  pointer-events: none;
+  font-weight: 500;
+}

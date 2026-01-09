@@ -15,7 +15,8 @@ export default function AdminUsers() {
   const [fPass, setFPass] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
-  const [editingUser, setEditingUser] = useState(null); // <- novo
+  const [fCommission, setFCommission] = useState(""); // % de premiação
+  const [editingUser, setEditingUser] = useState(null);
   
   const roleLabel = {
     driver: "Motorista",
@@ -47,6 +48,7 @@ export default function AdminUsers() {
     setFPass("");
     setOpen(true);
     setAllowBackdropClose(false);
+    setFCommission("");
 
     setTimeout(() => setAllowBackdropClose(true), 150);
   };
@@ -59,6 +61,12 @@ export default function AdminUsers() {
     setFPass("");
     setOpen(true);
     setAllowBackdropClose(false);
+    setFCommission(
+      user.commission !== undefined && user.commission !== null
+        ? String(user.commission)
+        : ""
+    );
+
     setTimeout(() => setAllowBackdropClose(true), 150);
   };
 
@@ -88,6 +96,9 @@ export default function AdminUsers() {
         email: fEmail.trim(),
         role: "driver",
         active: true,
+        commission: fCommission !== ""
+          ? Number(fCommission)
+          : 0,
       };
 
       if (fPass) {
@@ -178,6 +189,7 @@ export default function AdminUsers() {
                 <th>Usuário</th>
                 <th>Função</th>
                 <th>Status</th>
+                <th>Premiação</th>
                 <th className="users-actions-col">Ações</th>
               </tr>
             </thead>
@@ -194,8 +206,13 @@ export default function AdminUsers() {
                 <tr key={u._id}>
                   <td>{u.name}</td>
                   <td>{u.email}</td>
-                 <td>{roleLabel[u.role] || "-"}</td>
+                  <td>{roleLabel[u.role] || "-"}</td>
                   <td>{u.active ? "Ativo" : "Inativo"}</td>
+                  <td>
+                    {u.commission !== undefined
+                      ? `${u.commission}%`
+                      : "-"}
+                  </td>
                   <td className="users-row-actions">
                     <button
                       type="button"
@@ -270,7 +287,7 @@ export default function AdminUsers() {
               </div>
 
               <div className="form-field">
-                <label>Placa / Usuário</label>
+                <label>Placa</label>
                 <input
                   className="form-control"
                   type="text"
@@ -298,6 +315,28 @@ export default function AdminUsers() {
                   placeholder={editingUser ? "Deixar em branco para manter" : ""}
                   required={!editingUser}
                 />
+              </div>
+
+              <div className="form-field">
+                <label>Premiação (%)</label>
+
+                <div className="percent-input">
+                  <input
+                    className="form-control"
+                    type="number"
+                    min="0"
+                    max="100"
+                    step="0.01"
+                    placeholder="Ex: 5"
+                    value={fCommission}
+                    onChange={(e) => setFCommission(e.target.value)}
+                  />
+                  <span className="percent-suffix">%</span>
+                </div>
+
+                <small className="muted">
+                  Percentual de comissão do motorista
+                </small>
               </div>
 
               {error && <div className="alert error-alert">{error}</div>}

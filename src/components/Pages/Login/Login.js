@@ -157,7 +157,7 @@ export default function Login() {
               </div>
             </label>
 
-            {err && <div className="alert">{err}</div>}
+            {err && <div className="alert alert-danger">{err}</div>}
 
             <button className="btn-primary" type="submit" disabled={!canSubmit}>
               {loading ? (

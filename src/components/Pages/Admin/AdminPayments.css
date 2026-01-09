@@ -1,0 +1,280 @@
+/* ===== Layout base ===== */
+.admin-payments-page {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.admin-payments-card {
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.06);
+  padding: 24px;
+    color: #e5e7eb;
+}
+
+/* ===== Header ===== */
+.admin-payments-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.admin-payments-head h2 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.admin-payments-head .muted {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+/* ===== Filtros ===== */
+.admin-payments-filters {
+  background: #f9fafb;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 20px;
+  margin-top: 30px!important;
+}
+
+.admin-payments-filters .filters-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 180px;
+}
+
+.filter-field label {
+  font-size: 13px;
+  color: #374151;
+}
+
+.filter-grow {
+  flex: 1;
+}
+
+.filters-actions {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+/* ===== Inputs ===== */
+.inp,
+.form-control {
+  height: 40px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  font-size: 14px;
+  outline: none;
+}
+
+.inp:focus,
+.form-control:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+/* ===== Botões ===== */
+.btn {
+  height: 40px;
+  padding: 0 16px;
+  border-radius: 10px;
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+}
+
+.btn-primary {
+  background: #2563eb;
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: #1e40af;
+}
+
+.btn-secondary {
+  background: #e5e7eb;
+  color: #111827;
+}
+
+.btn-danger {
+  background: #dc2626;
+  color: #fff;
+}
+
+.btn-outline-danger {
+  background: transparent;
+  border: 1px solid #dc2626;
+  color: #dc2626;
+}
+
+.btn-outline-danger:hover {
+  background: #dc2626;
+  color: #fff;
+}
+
+/* ===== Tabela ===== */
+.admin-payments-table-wrap {
+  overflow-x: auto;
+}
+
+.admin-payments-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 900px;
+}
+
+.admin-payments-table thead {
+  background: #f3f4f6;
+}
+
+.admin-payments-table th,
+.admin-payments-table td {
+  padding: 12px 14px;
+  font-size: 14px;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.admin-payments-table th {
+  font-weight: 600;
+  color: #111827;
+}
+
+.admin-payments-table tbody tr:hover {
+  background: #f9fafb;
+}
+
+/* ===== Badge ===== */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.badge-success {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.badge-warning {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+/* ===== Modal ===== */
+.admin-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+@keyframes pop {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.modal-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.modal-head h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.admin-payments-form {
+  display: grid;
+  gap: 14px;
+}
+
+.admin-payments-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.admin-payments-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+/* ===== Alert ===== */
+.alert {
+  background: #fee2e2;
+  color: #991b1b;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+/* ===== Responsivo ===== */
+@media (max-width: 900px) {
+  .admin-payments-head {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filters-actions {
+    width: 100%;
+  }
+
+  .filters-actions button {
+    flex: 1;
+  }
+}
+
+@media (max-width: 600px) {
+  .admin-payments-page {
+    padding: 12px;
+  }
+
+  .admin-payments-card {
+    padding: 16px;
+  }
+
+  .admin-payments-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-payments-table {
+    min-width: 700px;
+  }
+}
+
+.chk input {
+    margin-right: 10px;
+}

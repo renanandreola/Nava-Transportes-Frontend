@@ -19,9 +19,8 @@ export default function DriverTripForm() {
   const [plate, setPlate] = useState("");
 
   const [premiacao, setPremiacao] = useState(0);
-  const [totalAssinado, setTotalAssinado] = useState(0);
-  const [totalPago, setTotalPago] = useState(0);
-  const [totalDoFrete, setTotalDoFrete] = useState(0);
+  // const [totalAssinado, setTotalAssinado] = useState(0);
+  // const [totalPago, setTotalPago] = useState(0);
 
   const [extras, setExtras] = useState([{ descricao: "", valor: 0 }]);
 
@@ -38,7 +37,7 @@ export default function DriverTripForm() {
       posto: "",
       litros: 0,
       mediaTrecho: 0,
-      assinador: "",
+      // assinador: "",
       pago: false,
     },
   ]);
@@ -58,22 +57,36 @@ export default function DriverTripForm() {
         posto: "",
         litros: 0,
         mediaTrecho: 0,
-        assinador: "",
+        // assinador: "",
         pago: false,
       },
     ]);
 
   const rmRow = (idx) => setRows((r) => r.filter((_, i) => i !== idx));
 
+  // const setRow = (idx, field, value) => {
+  //   setRows((r) => {
+  //     const clone = [...r];
+  //     const item = { ...clone[idx], [field]: value };
+  //     const kmPerc = n(item.kmFinal) - n(item.kmInicial);
+  //     item.mediaTrecho =
+  //       n(item.litros) > 0 ? +(kmPerc / n(item.litros)).toFixed(2) : 0;
+  //     item.saldo = +(n(item.frete) - n(item.adiantamento)).toFixed(2);
+  //     clone[idx] = item;
+  //     return clone;
+  //   });
+  // };
+
   const setRow = (idx, field, value) => {
     setRows((r) => {
       const clone = [...r];
-      const item = { ...clone[idx], [field]: value };
-      const kmPerc = n(item.kmFinal) - n(item.kmInicial);
-      item.mediaTrecho =
-        n(item.litros) > 0 ? +(kmPerc / n(item.litros)).toFixed(2) : 0;
-      item.saldo = +(n(item.frete) - n(item.adiantamento)).toFixed(2);
-      clone[idx] = item;
+      const current = { ...clone[idx], [field]: value };
+      const kmInicioReal = idx === 0 ? n(current.kmInicial) : n(clone[idx - 1].kmFinal);
+      const kmFinalAtual = n(current.kmFinal);
+      const kmPercorrido = Math.max(0, kmFinalAtual - kmInicioReal);
+      current.mediaTrecho = n(current.litros) > 0 && kmPercorrido > 0 ? +(kmPercorrido / n(current.litros)).toFixed(2) : 0;
+      current.saldo = +(n(current.frete) - n(current.adiantamento)).toFixed(2);
+      clone[idx] = current;
       return clone;
     });
   };
@@ -91,11 +104,12 @@ export default function DriverTripForm() {
     [rows]
   );
   const mediaGeral = useMemo(() => {
-    const totalKm = rows.reduce(
-      (s, r) => s + (n(r.kmFinal) - n(r.kmInicial)),
-      0
-    );
-    return litrosTotal > 0 ? +(totalKm / litrosTotal).toFixed(2) : 0;
+    if (!rows.length) return 0;
+
+    const kmRodado =
+      n(rows[rows.length - 1].kmFinal) - n(rows[0].kmInicial);
+
+    return litrosTotal > 0 ? +(kmRodado / litrosTotal).toFixed(2) : 0;
   }, [rows, litrosTotal]);
 
   const totalFreteLinhas = useMemo(
@@ -107,12 +121,33 @@ export default function DriverTripForm() {
     [rows]
   );
 
+  const totalFreteCalculado = totalFreteLinhas;
+
+  const valorPremiacao = useMemo(() => {
+    return +(totalFreteCalculado * (n(premiacao) / 100)).toFixed(2);
+  }, [totalFreteCalculado, premiacao]);
+
+  // useEffect(() => {
+  //   if (!totalDoFrete || n(totalDoFrete) === 0) {
+  //     setTotalDoFrete(totalFreteLinhas);
+  //   }
+  // }, [totalFreteLinhas]);
+
   useEffect(() => {
     (async () => {
-      try {
-        const { data } = await api.get("/auth/me");
-        setMe(data?.user || null);
-      } catch {}
+    try {
+      const { data } = await api.get("/auth/me");
+      const user = data?.user || null;
+      setMe(user);
+
+      if (user?.email) {
+        setPlate(user.email);
+      }
+
+      if (user?.commission !== undefined) {
+        setPremiacao(user.commission);
+      }
+    } catch {}
     })();
   }, []);
 
@@ -145,7 +180,7 @@ export default function DriverTripForm() {
 
     try {
       const payload = {
-        driverId: me?._id,
+        driverId: me?.id,
         driverName: me?.name,
         plate,
 
@@ -154,10 +189,12 @@ export default function DriverTripForm() {
         litrosTotal,
         mediaGeral,
 
-        totalAssinado: n(totalAssinado),
-        totalPago: n(totalPago),
-        premiacao: n(premiacao),
-        totalDoFrete: n(totalDoFrete) || totalFreteLinhas,
+        // totalAssinado: n(totalAssinado),
+        // totalPago: n(totalPago),
+        premiacaoPercentual: n(premiacao),
+        premiacaoValor: valorPremiacao,
+        totalViagem: totalFreteCalculado,
+        totalDoFrete: totalFreteCalculado,
 
         extras: extras
           .filter((x) => x.descricao || n(x.valor) > 0)
@@ -193,7 +230,7 @@ export default function DriverTripForm() {
           posto: "",
           litros: 0,
           mediaTrecho: 0,
-          assinador: "",
+          // assinador: "",
           pago: false,
         },
       ]);
@@ -221,50 +258,6 @@ export default function DriverTripForm() {
         </div>
 
         <form className="form driver-trip-form" onSubmit={onSubmit}>
-          <div className="driver-trip-summary-row">
-            <label className="driver-field-grow">
-              <span>Placa</span>
-              <input
-                className="inp"
-                value={plate}
-                onChange={(e) => setPlate(e.target.value)}
-                placeholder="ABC-1D23"
-              />
-            </label>
-
-            <label>
-              <span>KM Inicial (geral)</span>
-              <input
-                className="inp"
-                type="number"
-                value={kmInicial}
-                readOnly
-              />
-            </label>
-            <label>
-              <span>KM Final (geral)</span>
-              <input className="inp" type="number" value={kmFinal} readOnly />
-            </label>
-            <label>
-              <span>Litros total</span>
-              <input
-                className="inp"
-                type="number"
-                value={litrosTotal}
-                readOnly
-              />
-            </label>
-            <label>
-              <span>Média geral (km/l)</span>
-              <input
-                className="inp"
-                type="number"
-                value={mediaGeral}
-                readOnly
-              />
-            </label>
-          </div>
-
           {/* Tabela de trechos */}
           <div className="driver-trip-form-table-wrap">
             <table className="table driver-trip-form-table">
@@ -281,7 +274,7 @@ export default function DriverTripForm() {
                   <th>Posto</th>
                   <th>Litros</th>
                   <th>Média</th>
-                  <th>Assinador</th>
+                  {/* <th>Assinador</th> */}
                   <th>Pago?</th>
                   <th></th>
                 </tr>
@@ -376,14 +369,14 @@ export default function DriverTripForm() {
                     </td>
                     <td>
                       <input
-                        className="inp"
+                        className="inp disabled"
                         type="number"
                         step="0.01"
                         value={r.mediaTrecho}
                         readOnly
                       />
                     </td>
-                    <td>
+                    {/* <td>
                       <input
                         className="inp"
                         value={r.assinador}
@@ -391,7 +384,7 @@ export default function DriverTripForm() {
                           setRow(i, "assinador", e.target.value)
                         }
                       />
-                    </td>
+                    </td> */}
                     <td style={{ textAlign: "center" }}>
                       <input
                         type="checkbox"
@@ -405,6 +398,7 @@ export default function DriverTripForm() {
                           type="button"
                           className="btn-ghost driver-row-remove"
                           onClick={() => rmRow(i)}
+                          style={{color: 'gray'}}
                         >
                           Remover
                         </button>
@@ -434,19 +428,59 @@ export default function DriverTripForm() {
 
           <hr className="driver-trip-separator" />
 
-          {/* Totais finais */}
-          <div className="row gap driver-trip-totals">
-            <label>
-              <span>Premiação</span>
+          <div className="driver-trip-summary-row">
+            <label className="driver-field-grow">
+              <span>Placa</span>
               <input
-                className="inp"
+                className="inp disabled"
+                value={plate}
+                onChange={(e) => setPlate(e.target.value)}
+                placeholder="ABC-1D23"
+                readOnly
+              />
+            </label>
+
+            <label>
+              <span>KM Inicial (geral)</span>
+              <input
+                className="inp disabled"
                 type="number"
-                step="0.01"
-                value={premiacao}
-                onChange={(e) => setPremiacao(e.target.value)}
+                value={kmInicial}
+                readOnly
               />
             </label>
             <label>
+              <span>KM Final (geral)</span>
+              <input className="inp disabled" type="number" value={kmFinal} readOnly />
+            </label>
+            <label>
+              <span>Litros total</span>
+              <input
+                className="inp disabled"
+                type="number"
+                value={litrosTotal}
+                readOnly
+              />
+            </label>
+            <label>
+              <span>Média geral (km/l)</span>
+              <input
+                className="inp disabled"
+                type="number"
+                value={mediaGeral}
+                readOnly
+              />
+            </label>
+            <label>
+              <span>Premiação (R$)</span>
+              <input
+                className="inp disabled"
+                type="number"
+                value={valorPremiacao}
+                readOnly
+              />
+            </label>
+            {/* <label>
               <span>Total Assinado</span>
               <input
                 className="inp"
@@ -455,8 +489,8 @@ export default function DriverTripForm() {
                 value={totalAssinado}
                 onChange={(e) => setTotalAssinado(e.target.value)}
               />
-            </label>
-            <label>
+            </label> */}
+            {/* <label>
               <span>Total Pago</span>
               <input
                 className="inp"
@@ -465,21 +499,25 @@ export default function DriverTripForm() {
                 value={totalPago}
                 onChange={(e) => setTotalPago(e.target.value)}
               />
-            </label>
+            </label> */}
             <label>
               <span>Total do Frete</span>
               <input
-                className="inp"
+                className="inp disabled"
                 type="number"
-                step="0.01"
-                value={totalDoFrete}
-                onChange={(e) => setTotalDoFrete(e.target.value)}
+                value={totalFreteCalculado}
+                readOnly
               />
             </label>
           </div>
 
-          {err && <div className="alert error-alert">{err}</div>}
-          {ok && <div className="alert success-alert">{ok}</div>}
+          {/* Totais finais
+          <div className="row gap driver-trip-totals">
+
+          </div> */}
+
+          {err && <div className="alert alert-danger">{err}</div>}
+          {ok && <div className="alert alert-success">{ok}</div>}
 
           <div className="row end gap driver-trip-actions">
             <button

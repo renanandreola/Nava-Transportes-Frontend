@@ -134,3 +134,12 @@
     animation: none !important;
   }
 }
+
+.alert-success {
+  text-align: center;
+}
+
+.disabled {
+  background: #ced4da!important;
+  cursor: no-drop;
+}
