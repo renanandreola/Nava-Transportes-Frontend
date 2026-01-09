@@ -64,19 +64,6 @@ export default function DriverTripForm() {
 
   const rmRow = (idx) => setRows((r) => r.filter((_, i) => i !== idx));
 
-  // const setRow = (idx, field, value) => {
-  //   setRows((r) => {
-  //     const clone = [...r];
-  //     const item = { ...clone[idx], [field]: value };
-  //     const kmPerc = n(item.kmFinal) - n(item.kmInicial);
-  //     item.mediaTrecho =
-  //       n(item.litros) > 0 ? +(kmPerc / n(item.litros)).toFixed(2) : 0;
-  //     item.saldo = +(n(item.frete) - n(item.adiantamento)).toFixed(2);
-  //     clone[idx] = item;
-  //     return clone;
-  //   });
-  // };
-
   const setRow = (idx, field, value) => {
     setRows((r) => {
       const clone = [...r];
@@ -126,12 +113,6 @@ export default function DriverTripForm() {
   const valorPremiacao = useMemo(() => {
     return +(totalFreteCalculado * (n(premiacao) / 100)).toFixed(2);
   }, [totalFreteCalculado, premiacao]);
-
-  // useEffect(() => {
-  //   if (!totalDoFrete || n(totalDoFrete) === 0) {
-  //     setTotalDoFrete(totalFreteLinhas);
-  //   }
-  // }, [totalFreteLinhas]);
 
   useEffect(() => {
     (async () => {
@@ -188,7 +169,6 @@ export default function DriverTripForm() {
         kmFinal,
         litrosTotal,
         mediaGeral,
-
         // totalAssinado: n(totalAssinado),
         // totalPago: n(totalPago),
         premiacaoPercentual: n(premiacao),

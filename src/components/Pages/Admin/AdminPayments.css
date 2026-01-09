@@ -1,4 +1,3 @@
-/* ===== Layout base ===== */
 .admin-payments-page {
   padding: 24px;
   max-width: 1400px;
@@ -13,7 +12,6 @@
     color: #e5e7eb;
 }
 
-/* ===== Header ===== */
 .admin-payments-head {
   display: flex;
   justify-content: space-between;
@@ -32,7 +30,6 @@
   color: #6b7280;
 }
 
-/* ===== Filtros ===== */
 .admin-payments-filters {
   background: #f9fafb;
   border-radius: 12px;
@@ -69,7 +66,6 @@
   gap: 10px;
 }
 
-/* ===== Inputs ===== */
 .inp,
 .form-control {
   height: 40px;
@@ -86,7 +82,6 @@
   box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
 }
 
-/* ===== Botões ===== */
 .btn {
   height: 40px;
   padding: 0 16px;
@@ -126,7 +121,6 @@
   color: #fff;
 }
 
-/* ===== Tabela ===== */
 .admin-payments-table-wrap {
   overflow-x: auto;
 }
@@ -159,7 +153,6 @@
   background: #f9fafb;
 }
 
-/* ===== Badge ===== */
 .badge {
   display: inline-flex;
   align-items: center;
@@ -179,7 +172,6 @@
   color: #92400e;
 }
 
-/* ===== Modal ===== */
 .admin-modal {
   position: fixed;
   inset: 0;
@@ -231,7 +223,6 @@
   margin-top: 16px;
 }
 
-/* ===== Alert ===== */
 .alert {
   background: #fee2e2;
   color: #991b1b;
@@ -241,7 +232,6 @@
   margin-top: 10px;
 }
 
-/* ===== Responsivo ===== */
 @media (max-width: 900px) {
   .admin-payments-head {
     flex-direction: column;

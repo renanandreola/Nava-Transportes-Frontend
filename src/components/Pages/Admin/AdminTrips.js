@@ -13,30 +13,25 @@ export default function AdminTrips() {
   const [trips, setTrips] = useState([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
-
   const [driverId, setDriverId] = useState("");
   const [plate, setPlate] = useState("");
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [q, setQ] = useState("");
-
   const [editOpen, setEditOpen] = useState(false);
   const [allowBackdropClose, setAllowBackdropClose] = useState(false);
   const [savingEdit, setSavingEdit] = useState(false);
   const [editError, setEditError] = useState("");
   const [editingTrip, setEditingTrip] = useState(null);
-
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [viewingTrip, setViewingTrip] = useState(null);
-
   const [fDriverId, setFDriverId] = useState("");
   const [fDriverName, setFDriverName] = useState("");
   const [fPlate, setFPlate] = useState("");
   const [fTotalFrete, setFTotalFrete] = useState(0);
   // const [fTotalPago, setFTotalPago] = useState(0);
-const [fPremiacaoValor, setFPremiacaoValor] = useState(0);
+  const [fPremiacaoValor, setFPremiacaoValor] = useState(0);
   // const [fTotalAssinado, setFTotalAssinado] = useState(0);
-
   const [mapOpen, setMapOpen] = useState(false);
   const [mapTrip, setMapTrip] = useState(null);
 
