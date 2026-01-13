@@ -48,176 +48,206 @@ export default function AdminPayments() {
     loadPayments();
   }, []);
 
-const submit = async (e) => {
-  e.preventDefault();
+  const submit = async (e) => {
+    e.preventDefault();
 
-  try {
-    if (!driverId) {
-      return;
-    }
+    try {
+      if (!driverId) return;
+      if (!amount || Number(amount) <= 0) return;
 
-    if (!amount || Number(amount) <= 0) {
-      return;
-    }
+      const payload = {
+        driverId,
+        amount: Number(amount),
+        proofSent: !!proofSent,
+        note: note || "",
+        paidAt: paidAt ? new Date(paidAt) : new Date(),
+      };
 
-    const payload = {
-      driverId,
-      amount: Number(amount),
-      proofSent: !!proofSent,
-      note: note || "",
-      paidAt: paidAt ? new Date(paidAt) : new Date(),
-    };
+      console.log("PAYMENT PAYLOAD", payload);
 
-    console.log("PAYMENT PAYLOAD", payload);
+      await api.post("/admin/payments", payload);
 
-    await api.post("/admin/payments", payload);
+      setDriverId("");
+      setAmount("");
+      setProofSent(false);
+      setNote("");
+      setPaidAt("");
 
-    setDriverId("");
-    setAmount("");
-    setProofSent(false);
-    setNote("");
-    setPaidAt("");
-
-    await loadPayments();
-  } catch (e2) {
-  }
-};
+      await loadPayments();
+    } catch (e2) {}
+  };
 
   return (
-    <div className="card admin-main-card">
-        <div className="card-head row">
-            <div>
-                <h2>Pagamentos</h2>
-                <p className="muted">
-                    Cadastre os pagamentos enviados aos motoristas.
-                </p>
-            </div>
-
-            {/* FORM */}
-            <form className="admin-payments-form" onSubmit={submit}>
-                <div>
-                    <label class="form-label">Motorista</label>
-                    <select className="form-control" value={driverId} onChange={(e) => setDriverId(e.target.value)} required>
-                        <option value="">Selecione o motorista</option>
-                        {drivers.map((d) => (
-                            <option key={d._id} value={d._id}>
-                            {d.name || d.email}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-
-                <div>
-                    <label class="form-label">Valor pago</label>
-                    <input
-                        className="form-control"
-                        type="number"
-                        step="0.01"
-                        value={amount}
-                        onChange={(e) => setAmount(e.target.value)}
-                        required
-                    />
-                </div>
-
-                <div>
-                    <label class="form-label">Data do pagamento</label>
-                    <input
-                        className="form-control"
-                        type="datetime-local"
-                        value={paidAt}
-                        onChange={(e) => setPaidAt(e.target.value)}
-                        required
-                    />
-                </div>
-
-                <label className="chk">
-                    <input
-                        type="checkbox"
-                        checked={proofSent}
-                        onChange={(e) => setProofSent(e.target.checked)}
-                    />
-                    Comprovante enviado
-                </label>
-
-                <div>
-                    <label class="form-label">Observações</label>
-                    <textarea
-                        className="form-control"
-                        value={note}
-                        onChange={(e) => setNote(e.target.value)}
-                    />
-                </div>
-
-                <button className="btn btn-primary">Registrar pagamento</button>
-            </form>
-
-            <br></br>
-
-            {/* FILTROS */}
-            <div>
-                <h2>Filtros</h2>
-                <p className="muted">
-                    Filtre pagamentos se necessário
-                </p>
-            </div>
-
-            <div className="admin-payments-filters row">
-
-                <div>
-                    <label class="form-label">Motoristas</label>
-                    <select className="form-control" value={fDriver} onChange={(e) => setFDriver(e.target.value)}>
-                        <option value="">Todos os motoristas</option>
-                        {drivers.map((d) => (
-                            <option key={d._id} value={d._id}>
-                            {d.name || d.email}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-
-                <div>
-                    <label class="form-label">Data inicial</label>
-                    <input className="form-control" type="date" value={from} onChange={(e) => setFrom(e.target.value)} />
-                </div>
-
-                <div>
-                    <label class="form-label">Data final</label>
-                    <input className="form-control" type="date" value={to} onChange={(e) => setTo(e.target.value)} />
-                </div>
-
-                <button onClick={loadPayments} className="btn btn-secondary">
-                    Filtrar
-                </button>
-            </div>
-
-            {/* TABELA */}
-            {loading ? (
-                <p>Carregando…</p>
-            ) : (
-                <table className="table table-striped">
-                    <thead>
-                        <tr>
-                        <th>Data</th>
-                        <th>Motorista</th>
-                        <th>Valor</th>
-                        <th>Comprovante</th>
-                        <th>Obs</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {items.map((p) => (
-                            <tr key={p._id}>
-                                <td>{new Date(p.paidAt).toLocaleString("pt-BR")}</td>
-                                <td>{p.driverName}</td>
-                                <td>{brCurrency(p.amount)}</td>
-                                <td>{p.proofSent ? "Sim" : "Não"}</td>
-                                <td>{p.note || "-"}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            )}
+    <div className="admin-payments-page">
+      <div className="admin-payments-card">
+        <div className="admin-payments-head">
+          <div>
+            <h2>Pagamentos</h2>
+            <p className="muted">Cadastre os pagamentos enviados aos motoristas.</p>
+          </div>
         </div>
+
+        {/* FORM */}
+        <form className="admin-payments-form" onSubmit={submit}>
+          <div className="admin-payments-form-grid">
+            <div className="field">
+              <label className="form-label">Motorista</label>
+              <select
+                className="form-control"
+                value={driverId}
+                onChange={(e) => setDriverId(e.target.value)}
+                required
+              >
+                <option value="">Selecione o motorista</option>
+                {drivers.map((d) => (
+                  <option key={d._id} value={d._id}>
+                    {d.name || d.email}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="field">
+              <label className="form-label">Valor pago</label>
+              <input
+                className="form-control"
+                type="number"
+                step="0.01"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="field">
+              <label className="form-label">Data do pagamento</label>
+              <input
+                className="form-control"
+                type="datetime-local"
+                value={paidAt}
+                onChange={(e) => setPaidAt(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="field field-full">
+              <label className="chk">
+                <input
+                  type="checkbox"
+                  checked={proofSent}
+                  onChange={(e) => setProofSent(e.target.checked)}
+                />
+                Comprovante enviado
+              </label>
+            </div>
+
+            <div className="field field-full">
+              <label className="form-label">Observações</label>
+              <textarea
+                className="form-control"
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+                rows={3}
+              />
+            </div>
+          </div>
+
+          <div className="admin-payments-actions">
+            <button className="btn btn-primary" type="submit">
+              Registrar pagamento
+            </button>
+          </div>
+        </form>
+
+        <div className="sep" />
+
+        {/* FILTROS */}
+        <div className="admin-payments-subhead">
+          <div>
+            <h3>Filtros</h3>
+            <p className="muted">Filtre pagamentos se necessário</p>
+          </div>
+        </div>
+
+        <div className="admin-payments-filters">
+          <div className="filters-row">
+            <div className="filter-field">
+              <label className="form-label">Motoristas</label>
+              <select
+                className="form-control"
+                value={fDriver}
+                onChange={(e) => setFDriver(e.target.value)}
+              >
+                <option value="">Todos os motoristas</option>
+                {drivers.map((d) => (
+                  <option key={d._id} value={d._id}>
+                    {d.name || d.email}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="filter-field">
+              <label className="form-label">Data inicial</label>
+              <input
+                className="form-control"
+                type="date"
+                value={from}
+                onChange={(e) => setFrom(e.target.value)}
+              />
+            </div>
+
+            <div className="filter-field">
+              <label className="form-label">Data final</label>
+              <input
+                className="form-control"
+                type="date"
+                value={to}
+                onChange={(e) => setTo(e.target.value)}
+              />
+            </div>
+
+            <div className="filters-actions">
+              <button onClick={loadPayments} className="btn btn-secondary" type="button">
+                Filtrar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* TABELA */}
+        {loading ? (
+          <p>Carregando…</p>
+        ) : (
+          <div className="admin-payments-table-wrap">
+            <table className="admin-payments-table">
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  <th>Motorista</th>
+                  <th>Valor</th>
+                  <th>Comprovante</th>
+                  <th>Obs</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {items.map((p) => (
+                  <tr key={p._id}>
+                    <td data-label="Data">
+                      {new Date(p.paidAt).toLocaleString("pt-BR")}
+                    </td>
+                    <td data-label="Motorista">{p.driverName}</td>
+                    <td data-label="Valor">{brCurrency(p.amount)}</td>
+                    <td data-label="Comprovante">{p.proofSent ? "Sim" : "Não"}</td>
+                    <td data-label="Obs">{p.note || "-"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

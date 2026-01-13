@@ -445,10 +445,10 @@ export default function DriverTripForm() {
             <label>
               <span>Média geral (km/l)</span>
               <input
-                className="inp disabled"
+                className="inp"
                 type="number"
                 value={mediaGeral}
-                readOnly
+                // readOnly
               />
             </label>
             <label>
@@ -483,10 +483,10 @@ export default function DriverTripForm() {
             <label>
               <span>Total do Frete</span>
               <input
-                className="inp disabled"
+                className="inp"
                 type="number"
                 value={totalFreteCalculado}
-                readOnly
+                // readOnly
               />
             </label>
           </div>
