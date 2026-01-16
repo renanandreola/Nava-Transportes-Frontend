@@ -323,3 +323,103 @@
     transition: none !important;
   }
 }
+
+/* ================================
+   Modal EDITAR (escopado)
+   ================================ */
+
+.admin-trips-edit-modal {
+  padding: 14px;
+}
+
+.admin-trips-edit-card {
+  width: 70%;
+  max-height: 90vh;
+  overflow: auto;
+
+  display: flex;
+  flex-direction: column;
+
+  /* preserva teu visual */
+  background: #020617;
+  border-radius: 16px;
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  box-shadow: 0 22px 60px rgba(15, 23, 42, 0.7);
+  color: #e5e7eb;
+}
+
+@media (max-width: 901px) {
+  .admin-trips-edit-card {
+    width: 100%!important;
+  }
+}
+
+/* Header do modal sempre visível quando rolar */
+.admin-trips-edit-card .admin-trips-edit-head {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+
+  background: #020617;
+  padding-top: 6px;
+  padding-bottom: 6px;
+
+  /* opcional: separa visualmente */
+  border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+}
+
+/* Conteúdo do form não “encosta” nas bordas quando tiver scroll */
+.admin-trips-edit-card .admin-trips-form {
+  padding-bottom: 10px;
+}
+
+/* Grids no desktop: evita colunas esmagadas */
+@media (min-width: 901px) {
+  .admin-trips-edit-card .admin-trips-form-grid {
+    grid-template-columns: repeat(4, minmax(180px, 1fr));
+  }
+
+  .admin-trips-edit-card .admin-trips-modal-actions {
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+  }
+
+  .admin-trips-edit-card .admin-trips-modal-actions .btn {
+    width: auto;
+    min-width: 180px;
+  }
+}
+
+/* Ações no mobile: botões 100% (sem quebrar) */
+@media (max-width: 900px) {
+  .admin-trips-edit-card .admin-trips-modal-actions .btn {
+    width: 100%;
+  }
+}
+
+/* Tabelas dentro do modal (Extras/Trechos) sempre com scroll horizontal */
+.admin-trips-edit-card .table-wrap {
+  overflow: auto;
+  border-radius: 12px;
+}
+
+/* Evita tabela “espremida” (melhor scroll do que quebrar layout) */
+.admin-trips-edit-card .table-wrap .table {
+  min-width: 980px;
+}
+
+/* Trechos tem muitas colunas: dá mais “base” */
+.admin-trips-edit-card .admin-trips-section:last-of-type .table-wrap .table {
+  min-width: 1200px;
+}
+
+/* Inputs e selects sempre ocupando a largura do grid */
+.admin-trips-edit-card .form-control {
+  width: 100%;
+}
+
+/* Pequeno ajuste pra não cortar sombras/bordas quando rolar */
+.admin-trips-edit-card hr {
+  border-color: rgba(148, 163, 184, 0.18);
+}

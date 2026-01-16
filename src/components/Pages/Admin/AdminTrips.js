@@ -846,7 +846,7 @@ export default function AdminTrips() {
       {/* Modal de edição */}
       {editOpen && (
         <div
-          className="admin-modal"
+          className="admin-modal admin-trips-edit-modal"
           role="dialog"
           aria-modal="true"
           onClick={(e) => {
@@ -855,8 +855,8 @@ export default function AdminTrips() {
             }
           }}
         >
-          <div className="admin-modal-card pop" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-head">
+          <div className="admin-modal-card pop admin-trips-edit-card" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-head admin-trips-edit-head">
               <h3>Editar controle de saída</h3>
               <button
                 className="btn btn-sm btn-outline-light"
