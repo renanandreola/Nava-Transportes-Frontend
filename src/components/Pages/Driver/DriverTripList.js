@@ -10,18 +10,17 @@ export default function DriverTripList() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
-
   const [editOpen, setEditOpen] = useState(false);
-  const [allowBackdropClose, setAllowBackdropClose] = useState(false);
-  const [savingEdit, setSavingEdit] = useState(false);
-  const [editError, setEditError] = useState("");
-  const [editingTrip, setEditingTrip] = useState(null);
-
-  const [fPlate, setFPlate] = useState("");
-  const [fKmInicial, setFKmInicial] = useState(0);
-  const [fKmFinal, setFKmFinal] = useState(0);
-  const [fTotalFrete, setFTotalFrete] = useState(0);
-  const [fPremiacao, setFPremiacao] = useState(0);
+  const [savingEdit] = useState(false);
+  
+  // const [allowBackdropClose, setAllowBackdropClose] = useState(false);
+  // const [editError, setEditError] = useState("");
+  // const [editingTrip, setEditingTrip] = useState(null);
+  // const [fPlate, setFPlate] = useState("");
+  // const [fKmInicial, setFKmInicial] = useState(0);
+  // const [fKmFinal, setFKmFinal] = useState(0);
+  // const [fTotalFrete, setFTotalFrete] = useState(0);
+  // const [fPremiacao, setFPremiacao] = useState(0);
 
   const formatDateTime = (v) => {
     if (!v) return "-";
@@ -49,20 +48,20 @@ export default function DriverTripList() {
     load();
   }, []);
 
-  const openEditModal = (trip) => {
-    setEditingTrip(trip);
-    setEditError("");
+  // const openEditModal = (trip) => {
+  //   setEditingTrip(trip);
+  //   setEditError("");
 
-    setFPlate(trip.plate || "");
-    setFKmInicial(trip.kmInicial || 0);
-    setFKmFinal(trip.kmFinal || 0);
-    setFTotalFrete(trip.totalDoFrete || 0);
-    setFPremiacao(trip.premiacao || 0);
+  //   setFPlate(trip.plate || "");
+  //   setFKmInicial(trip.kmInicial || 0);
+  //   setFKmFinal(trip.kmFinal || 0);
+  //   setFTotalFrete(trip.totalDoFrete || 0);
+  //   setFPremiacao(trip.premiacao || 0);
 
-    setEditOpen(true);
-    setAllowBackdropClose(false);
-    setTimeout(() => setAllowBackdropClose(true), 150);
-  };
+  //   setEditOpen(true);
+  //   setAllowBackdropClose(false);
+  //   setTimeout(() => setAllowBackdropClose(true), 150);
+  // };
 
   const closeEditModal = () => {
     if (savingEdit) return;
@@ -76,50 +75,51 @@ export default function DriverTripList() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editOpen, savingEdit]);
 
-  const submitEdit = async (e) => {
-    e.preventDefault();
-    if (!editingTrip || savingEdit) return;
+  // const submitEdit = async (e) => {
+  //   e.preventDefault();
+  //   if (!editingTrip || savingEdit) return;
 
-    setEditError("");
-    setSavingEdit(true);
+  //   setEditError("");
+  //   setSavingEdit(true);
 
-    try {
-      const payload = {
-        plate: fPlate.trim(),
-        kmInicial: n(fKmInicial),
-        kmFinal: n(fKmFinal),
-        totalDoFrete: n(fTotalFrete),
-        premiacao: n(fPremiacao),
-      };
+  //   try {
+  //     const payload = {
+  //       plate: fPlate.trim(),
+  //       kmInicial: n(fKmInicial),
+  //       kmFinal: n(fKmFinal),
+  //       totalDoFrete: n(fTotalFrete),
+  //       premiacao: n(fPremiacao),
+  //     };
 
-      await api.put(`/driver/trips/${editingTrip._id}`, payload);
+  //     await api.put(`/driver/trips/${editingTrip._id}`, payload);
 
-      setEditOpen(false);
-      await load();
-    } catch (e2) {
-      setEditError(
-        e2?.response?.data?.message || "Erro ao atualizar viagem"
-      );
-    } finally {
-      setSavingEdit(false);
-    }
-  };
+  //     setEditOpen(false);
+  //     await load();
+  //   } catch (e2) {
+  //     setEditError(
+  //       e2?.response?.data?.message || "Erro ao atualizar viagem"
+  //     );
+  //   } finally {
+  //     setSavingEdit(false);
+  //   }
+  // };
 
-  const handleDelete = async (trip) => {
-    const ok = window.confirm(
-      `Tem certeza que deseja excluir a viagem da placa "${trip.plate}"?`
-    );
-    if (!ok) return;
+  // const handleDelete = async (trip) => {
+  //   const ok = window.confirm(
+  //     `Tem certeza que deseja excluir a viagem da placa "${trip.plate}"?`
+  //   );
+  //   if (!ok) return;
 
-    try {
-      await api.delete(`/driver/trips/${trip._id}`);
-      await load();
-    } catch (e2) {
-      alert(e2?.response?.data?.message || "Erro ao excluir viagem");
-    }
-  };
+  //   try {
+  //     await api.delete(`/driver/trips/${trip._id}`);
+  //     await load();
+  //   } catch (e2) {
+  //     alert(e2?.response?.data?.message || "Erro ao excluir viagem");
+  //   }
+  // };
 
   if (loading) {
     return (

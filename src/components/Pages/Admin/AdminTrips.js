@@ -38,7 +38,7 @@ export default function AdminTrips() {
   const [allowBackdropClose, setAllowBackdropClose] = useState(false);
   const [savingEdit, setSavingEdit] = useState(false);
   const [editError, setEditError] = useState("");
-  const [editingTrip, setEditingTrip] = useState(null);
+  const [, setEditingTrip] = useState(null);
   const [editForm, setEditForm] = useState(null);
   const [viewingTrip, setViewingTrip] = useState(null);
   const [mapTrip, setMapTrip] = useState(null);
@@ -287,6 +287,7 @@ export default function AdminTrips() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editOpen, savingEdit]);
 
   const submitEdit = async (e) => {

@@ -46,6 +46,7 @@ export default function AdminPayments() {
   useEffect(() => {
     loadDrivers();
     loadPayments();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const submit = async (e) => {

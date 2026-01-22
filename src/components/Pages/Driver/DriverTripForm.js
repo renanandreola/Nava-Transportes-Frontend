@@ -22,7 +22,7 @@ export default function DriverTripForm() {
   // const [totalAssinado, setTotalAssinado] = useState(0);
   // const [totalPago, setTotalPago] = useState(0);
 
-  const [extras, setExtras] = useState([{ descricao: "", valor: 0 }]);
+  const [extras] = useState([{ descricao: "", valor: 0 }]);
 
   const [rows, setRows] = useState([
     {
