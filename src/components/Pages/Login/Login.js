@@ -7,7 +7,7 @@ import { tokenService } from "../../../services/tokenService";
 export default function Login() {
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState("");
@@ -68,7 +68,7 @@ export default function Login() {
 
     try {
       const { data } = await api.post("/auth/login", {
-        email,
+        name,
         password,
       });
 
@@ -113,7 +113,7 @@ export default function Login() {
   //   }
   // };
 
-  const canSubmit = email.trim() && password.trim() && !loading;
+  const canSubmit = name.trim() && password.trim() && !loading;
   const year = new Date().getFullYear();
 
   return (
@@ -133,12 +133,12 @@ export default function Login() {
                 <input
                   type="text"
                   placeholder="Usuário"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
                   autoFocus
                   required
                   autoComplete="username"
-                  inputMode="email"
+                  // inputMode="email"
                 />
               </div>
             </label>
