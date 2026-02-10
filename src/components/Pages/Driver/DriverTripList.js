@@ -162,6 +162,7 @@ export default function DriverTripList() {
                   <th>KM Rodado</th>
                   <th>Total Frete</th>
                   <th>Premiação</th>
+                  <th>Saldo</th>
                   {/* <th className="driver-trip-actions-col">Ações</th> */}
                 </tr>
               </thead>
@@ -170,6 +171,11 @@ export default function DriverTripList() {
                   const kmIni = n(t.kmInicial);
                   const kmFim = n(t.kmFinal);
                   const kmRodado = kmFim - kmIni;
+
+                  const totalSaldo = (t.trechos || []).reduce(
+                    (s, r) => s + n(r.saldo),
+                    0
+                  );
 
                   return (
                     <tr key={t._id}>
@@ -180,6 +186,11 @@ export default function DriverTripList() {
                       <td>{kmRodado}</td>
                       <td>{brCurrency(t.totalDoFrete || 0)}</td>
                       <td>{brCurrency(t.premiacaoValor || 0)}</td>
+                      <td>
+                        <b style={{ color: totalSaldo > 0 ? "#c62828" : "#555" }}>
+                          {brCurrency(totalSaldo)}
+                        </b>
+                      </td>
                       {/* <td className="driver-trip-row-actions">
                         <button
                           type="button"

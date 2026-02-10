@@ -2,6 +2,22 @@ import React, { useMemo, useState, useEffect } from "react";
 import api from "../../../services/api";
 import "./DriverTripForm.css";
 
+const STORAGE_KEY = "driver_trip_draft";
+
+const saveDraft = (data) => {
+  try {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({
+        ...data,
+        updatedAt: new Date().toISOString(),
+      })
+    );
+  } catch (e) {
+    console.warn("Erro ao salvar rascunho", e);
+  }
+};
+
 const n = (v) => (isNaN(Number(v)) ? 0 : Number(v));
 const brCurrency = (v) =>
   n(v).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -42,38 +58,100 @@ export default function DriverTripForm() {
     },
   ]);
 
-  const addRow = () =>
-    setRows((r) => [
-      ...r,
-      {
-        data: new Date().toISOString().slice(0, 10),
-        origem: "",
-        destino: "",
-        frete: 0,
-        adiantamento: 0,
-        saldo: 0,
-        kmInicial: 0,
-        kmFinal: 0,
-        posto: "",
-        litros: 0,
-        mediaTrecho: 0,
-        // assinador: "",
-        pago: false,
-      },
-    ]);
+  // const addRow = () =>
+  //   setRows((r) => [
+  //     ...r,
+  //     {
+  //       data: new Date().toISOString().slice(0, 10),
+  //       origem: "",
+  //       destino: "",
+  //       frete: 0,
+  //       adiantamento: 0,
+  //       saldo: 0,
+  //       kmInicial: 0,
+  //       kmFinal: 0,
+  //       posto: "",
+  //       litros: 0,
+  //       mediaTrecho: 0,
+  //       // assinador: "",
+  //       pago: false,
+  //     },
+  //   ]);
 
-  const rmRow = (idx) => setRows((r) => r.filter((_, i) => i !== idx));
+  const addRow = () =>
+    setRows((r) => {
+      const updated = [
+        ...r,
+        {
+          data: new Date().toISOString().slice(0, 10),
+          origem: "",
+          destino: "",
+          frete: 0,
+          adiantamento: 0,
+          saldo: 0,
+          kmInicial: 0,
+          kmFinal: 0,
+          posto: "",
+          litros: 0,
+          mediaTrecho: 0,
+          pago: false,
+        },
+      ];
+
+      saveDraft({ rows: updated, premiacao, plate });
+      return updated;
+    });
+
+  // const rmRow = (idx) => setRows((r) => r.filter((_, i) => i !== idx));
+
+  const rmRow = (idx) =>
+    setRows((r) => {
+      const updated = r.filter((_, i) => i !== idx);
+      saveDraft({ rows: updated, premiacao, plate });
+      return updated;
+    });
+
+  // const setRow = (idx, field, value) => {
+  //   setRows((r) => {
+  //     const clone = [...r];
+  //     const current = { ...clone[idx], [field]: value };
+  //     const kmInicioReal = idx === 0 ? n(current.kmInicial) : n(clone[idx - 1].kmFinal);
+  //     const kmFinalAtual = n(current.kmFinal);
+  //     const kmPercorrido = Math.max(0, kmFinalAtual - kmInicioReal);
+  //     current.mediaTrecho = n(current.litros) > 0 && kmPercorrido > 0 ? +(kmPercorrido / n(current.litros)).toFixed(2) : 0;
+  //     current.saldo = +(n(current.frete) - n(current.adiantamento)).toFixed(2);
+  //     clone[idx] = current;
+  //     return clone;
+  //   });
+  // };
 
   const setRow = (idx, field, value) => {
     setRows((r) => {
       const clone = [...r];
       const current = { ...clone[idx], [field]: value };
-      const kmInicioReal = idx === 0 ? n(current.kmInicial) : n(clone[idx - 1].kmFinal);
+
+      const kmInicioReal =
+        idx === 0 ? n(current.kmInicial) : n(clone[idx - 1].kmFinal);
+
       const kmFinalAtual = n(current.kmFinal);
       const kmPercorrido = Math.max(0, kmFinalAtual - kmInicioReal);
-      current.mediaTrecho = n(current.litros) > 0 && kmPercorrido > 0 ? +(kmPercorrido / n(current.litros)).toFixed(2) : 0;
+
+      current.mediaTrecho =
+        n(current.litros) > 0 && kmPercorrido > 0
+          ? +(kmPercorrido / n(current.litros)).toFixed(2)
+          : 0;
+
       current.saldo = +(n(current.frete) - n(current.adiantamento)).toFixed(2);
+
       clone[idx] = current;
+
+      // 🔥 SALVA IMEDIATAMENTE
+      saveDraft({
+        rows: clone,
+        premiacao,
+        plate,
+      });
+
       return clone;
     });
   };
@@ -108,6 +186,12 @@ export default function DriverTripForm() {
     [rows]
   );
 
+  const totalSaldo = useMemo(
+    () => rows.reduce((s, r) => s + n(r.saldo), 0),
+    [rows]
+  );
+
+
   const totalFreteCalculado = totalFreteLinhas;
 
   const valorPremiacao = useMemo(() => {
@@ -130,6 +214,21 @@ export default function DriverTripForm() {
       }
     } catch {}
     })();
+  }, []);
+
+  useEffect(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+
+        if (parsed.rows?.length) setRows(parsed.rows);
+        if (parsed.premiacao !== undefined) setPremiacao(parsed.premiacao);
+        if (parsed.plate) setPlate(parsed.plate);
+      } catch (e) {
+        console.warn("Erro ao restaurar viagem em aberto", e);
+      }
+    }
   }, []);
 
   const [saving, setSaving] = useState(false);
@@ -196,6 +295,9 @@ export default function DriverTripForm() {
       };
 
       await api.post("/driver/trips", payload);
+      
+      localStorage.removeItem(STORAGE_KEY);
+
       setOk("Viagem cadastrada com sucesso.");
       setRows([
         {
@@ -401,9 +503,17 @@ export default function DriverTripForm() {
             </button>
             <div className="muted">
               Total frete (linhas):{" "}
-              <b>{brCurrency(totalFreteLinhas)}</b> • Adiantado:{" "}
+              <b>{brCurrency(totalFreteLinhas)}</b>
+              {" • "}
+              Adiantado:{" "}
               <b>{brCurrency(totalAdiantado)}</b>
+              {" • "}
+              Saldo a receber:{" "}
+              <b style={{ color: totalSaldo > 0 ? "#c62828" : "inherit" }}>
+                {brCurrency(totalSaldo)}
+              </b>
             </div>
+
           </div>
 
           <hr className="driver-trip-separator" />
