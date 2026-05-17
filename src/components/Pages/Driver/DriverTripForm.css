@@ -143,3 +143,7 @@
   background: #ced4da!important;
   cursor: no-drop;
 }
+
+.form-check-label {
+  margin-left: 20px;
+}
