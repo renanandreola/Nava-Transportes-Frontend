@@ -574,7 +574,7 @@ export default function DriverTripForm() {
                       </td>
                       <td>
                         <input
-                          className="inp"
+                          className="inp disabled"
                           type="number"
                           step="0.01"
                           value={r.saldo}
@@ -721,7 +721,7 @@ export default function DriverTripForm() {
               <label>
                 <span>Média geral (km/l)</span>
                 <input
-                  className="inp"
+                  className="inp disabled"
                   type="number"
                   value={mediaGeral}
                   // readOnly
@@ -759,7 +759,7 @@ export default function DriverTripForm() {
               <label>
                 <span>Total do Frete</span>
                 <input
-                  className="inp"
+                  className="inp disabled"
                   type="number"
                   value={totalFreteCalculado}
                   // readOnly
