@@ -760,7 +760,7 @@ export default function AdminTrips() {
           <table className="table admin-trips-table">
             <thead>
               <tr>
-                <th>Data</th>
+                {/* <th>Data</th> */}
                 <th>Motorista</th>
                 <th>Placa</th>
                 <th>KM Inicial</th>
@@ -768,7 +768,7 @@ export default function AdminTrips() {
                 <th>KM Rodado</th>
                 <th>Total Frete</th>
                 <th>Premiação</th>
-                <th>Local</th>
+                {/* <th>Local</th> */}
                 <th>Criado em</th>
                 <th className="admin-trips-actions-col">Ações</th>
               </tr>
@@ -786,7 +786,7 @@ export default function AdminTrips() {
 
                 return (
                   <tr key={t._id}>
-                    <td>{formatDate(dataPrincipal)}</td>
+                    {/* <td>{formatDate(dataPrincipal)}</td> */}
                     <td>{t.driverName || "-"}</td>
                     <td>{t.plate || "-"}</td>
                     <td>{kmIni || "-"}</td>
@@ -797,7 +797,7 @@ export default function AdminTrips() {
                       {brCurrency(t.premiacaoValor || 0)}
                       <span className="muted"> ({t.premiacaoPercentual || 0}%)</span>
                     </td>
-                    <td>
+                    {/* <td>
                       {hasCoords ? (
                         <button
                           type="button"
@@ -809,7 +809,7 @@ export default function AdminTrips() {
                       ) : (
                         <span className="muted">Sem local</span>
                       )}
-                    </td>
+                    </td> */}
                     <td>{formatDateTime(t.createdAt)}</td>
                     <td className="admin-trips-row-actions">
                       <button

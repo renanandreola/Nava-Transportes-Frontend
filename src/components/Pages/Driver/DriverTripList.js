@@ -1,10 +1,16 @@
 import React, { useEffect, useState } from "react";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 import api from "../../../services/api";
 import "./DriverTripList.css";
 
 const n = (v) => (isNaN(Number(v)) ? 0 : Number(v));
 const brCurrency = (v) =>
   n(v).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+
+const STORAGE_KEY = "driver_trip_draft";
+const VIEW_STORAGE_KEY = "driver_trip_view";
+const FORM_ROUTE = "/driver/trips/new"; // ajuste se a rota do formulário for outra
 
 export default function DriverTripList() {
   const [items, setItems] = useState([]);
@@ -35,8 +41,51 @@ export default function DriverTripList() {
     try {
       setLoading(true);
       setErr("");
+
       const { data } = await api.get("/driver/trips");
-      setItems(data.items || []);
+
+      const finalizados = (data.items || []).map((item) => ({
+        ...item,
+        tipoRegistro: "finalizado",
+      }));
+
+      let rascunhos = [];
+
+      const savedDraft = localStorage.getItem(STORAGE_KEY);
+
+      if (savedDraft) {
+        try {
+          const parsed = JSON.parse(savedDraft);
+
+          if (parsed?.rows?.length) {
+            const rows = parsed.rows || [];
+
+            const kmInicial = rows.length ? n(rows[0].kmInicial) : 0;
+            const kmFinal = rows.length ? n(rows[rows.length - 1].kmFinal) : 0;
+            const totalDoFrete = rows.reduce((s, r) => s + n(r.frete), 0);
+            const premiacaoValor = +(
+              totalDoFrete *
+              (n(parsed.premiacao) / 100)
+            ).toFixed(2);
+
+            rascunhos.push({
+              _id: "local-draft",
+              tipoRegistro: "rascunho",
+              plate: parsed.plate || "-",
+              kmInicial,
+              kmFinal,
+              totalDoFrete,
+              premiacaoValor,
+              trechos: rows,
+              updatedAt: parsed.updatedAt,
+            });
+          }
+        } catch (e) {
+          console.warn("Erro ao carregar rascunho local", e);
+        }
+      }
+
+      setItems([...rascunhos, ...finalizados]);
     } catch (e) {
       setErr("Erro ao carregar viagens");
     } finally {
@@ -121,6 +170,97 @@ export default function DriverTripList() {
   //   }
   // };
 
+  const handleEditDraft = (trip) => {
+    if (trip.tipoRegistro !== "rascunho") return;
+
+      window.location.href = FORM_ROUTE;
+    };
+
+    const exportTripPDF = (trip) => {
+    const doc = new jsPDF();
+
+    const kmIni = n(trip.kmInicial);
+    const kmFim = n(trip.kmFinal);
+    const kmRodado = kmFim - kmIni;
+
+    const trechos = trip.trechos || [];
+
+    const totalSaldo = trechos.reduce((s, r) => s + n(r.saldo), 0);
+    const totalAdiantado = trechos.reduce((s, r) => s + n(r.adiantamento), 0);
+    const totalLitros = trechos.reduce((s, r) => s + n(r.litros), 0);
+
+    const status =
+      trip.tipoRegistro === "rascunho" ? "Rascunho" : "Finalizado";
+
+    doc.setFontSize(16);
+    doc.text("Relatório da Viagem", 14, 15);
+
+    doc.setFontSize(10);
+    doc.text(`Status: ${status}`, 14, 25);
+    doc.text(`Placa: ${trip.plate || "-"}`, 14, 32);
+    doc.text(`Data: ${formatDateTime(trechos?.[0]?.data)}`, 14, 39);
+    doc.text(`KM Inicial: ${kmIni}`, 14, 46);
+    doc.text(`KM Final: ${kmFim}`, 14, 53);
+    doc.text(`KM Rodado: ${kmRodado}`, 14, 60);
+    doc.text(`Total do Frete: ${brCurrency(trip.totalDoFrete || 0)}`, 14, 67);
+    doc.text(`Premiação: ${brCurrency(trip.premiacaoValor || 0)}`, 14, 74);
+    doc.text(`Total Adiantado: ${brCurrency(totalAdiantado)}`, 14, 81);
+    doc.text(`Saldo: ${brCurrency(totalSaldo)}`, 14, 88);
+    doc.text(`Litros Total: ${totalLitros}`, 14, 95);
+
+    autoTable(doc, {
+      startY: 105,
+      head: [[
+        "Data",
+        "Origem",
+        "Destino",
+        "Frete",
+        "Adiant.",
+        "Saldo",
+        "KM Ini",
+        "KM Fin",
+        "Posto",
+        "Litros",
+        "Média"
+      ]],
+      body: trechos.map((r) => [
+        r.data ? new Date(r.data).toLocaleDateString("pt-BR") : "-",
+        r.origem || "-",
+        r.destino || "-",
+        brCurrency(r.frete || 0),
+        brCurrency(r.adiantamento || 0),
+        brCurrency(r.saldo || 0),
+        n(r.kmInicial),
+        n(r.kmFinal),
+        r.posto || "-",
+        n(r.litros),
+        n(r.mediaTrecho),
+      ]),
+      styles: {
+        fontSize: 8,
+      },
+      headStyles: {
+        fillColor: [40, 40, 40],
+      },
+    });
+
+    const fileName = `viagem-${trip.plate || "sem-placa"}-${status}.pdf`;
+
+    doc.save(fileName);
+  };
+
+  const handleViewTrip = (trip) => {
+    localStorage.setItem(
+      VIEW_STORAGE_KEY,
+      JSON.stringify({
+        ...trip,
+        viewMode: true,
+      })
+    );
+
+    window.location.href = `${FORM_ROUTE}?mode=view`;
+  };
+
   if (loading) {
     return (
       <div className="driver-page driver-trip-list-page">
@@ -163,7 +303,8 @@ export default function DriverTripList() {
                   <th>Total Frete</th>
                   <th>Premiação</th>
                   <th>Saldo</th>
-                  {/* <th className="driver-trip-actions-col">Ações</th> */}
+                  <th>Status</th>
+                  <th className="driver-trip-actions-col">Ações</th>
                 </tr>
               </thead>
               <tbody>
@@ -178,7 +319,14 @@ export default function DriverTripList() {
                   );
 
                   return (
-                    <tr key={t._id}>
+                    <tr
+                      key={t._id}
+                      className={
+                        t.tipoRegistro === "rascunho"
+                          ? "driver-trip-row-draft"
+                          : "driver-trip-row-final"
+                      }
+                    >
                       <td>{formatDateTime(t.trechos?.[0]?.data) || "-"}</td>
                       <td>{t.plate || "-"}</td>
                       <td>{kmIni}</td>
@@ -190,6 +338,54 @@ export default function DriverTripList() {
                         <b style={{ color: totalSaldo > 0 ? "#c62828" : "#555" }}>
                           {brCurrency(totalSaldo)}
                         </b>
+                      </td>
+                      <td>
+                        <span
+                          className={
+                            t.tipoRegistro === "rascunho"
+                              ? "driver-trip-status-draft"
+                              : "driver-trip-status-final"
+                          }
+                        >
+                          {t.tipoRegistro === "rascunho" ? "Rascunho" : "Finalizado"}
+                        </span>
+                      </td>
+
+                      <td className="driver-trip-row-actions">
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-warning"
+                          onClick={() => handleEditDraft(t)}
+                          disabled={t.tipoRegistro !== "rascunho"}
+                          title={
+                            t.tipoRegistro !== "rascunho"
+                              ? "Viagem finalizada não pode ser editada"
+                              : "Editar rascunho"
+                          }
+                        >
+                          <img className="driver-trip-edit-icon" src="https://i.imgur.com/GoMRDvt.png" alt="Editar" />
+                        </button>
+
+                        {t.tipoRegistro !== "rascunho" && (
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-danger"
+                            onClick={() => exportTripPDF(t)}
+                            style={{ marginLeft: "8px" }}
+                          >
+                            <img className="driver-trip-export-icon" src="https://i.imgur.com/rH782Yn.png" alt="Exportar" />
+                          </button>
+                        )}
+                        {t.tipoRegistro !== "rascunho" && (
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-info"
+                            onClick={() => handleViewTrip(t)}
+                            style={{ marginLeft: "8px" }}
+                          >
+                            <img className="driver-trip-export-icon" src="https://i.imgur.com/IXAQ4ZG.png" alt="Ver mais" />
+                          </button>
+                        )}
                       </td>
                       {/* <td className="driver-trip-row-actions">
                         <button

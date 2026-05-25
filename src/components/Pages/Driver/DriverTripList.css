@@ -162,3 +162,44 @@
   flex-direction: column;
   gap: 15px;
 }
+
+.driver-trip-row-final {
+  background-color: #e8f5e9 !important;
+}
+
+.driver-trip-row-draft {
+  background-color: #fff8e1 !important;
+}
+
+.driver-trip-status-final {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: #c8e6c9;
+  color: #256029;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.driver-trip-status-draft {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: #ffecb3;
+  color: #8a6d00;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.driver-trip-row-actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.driver-trip-edit-icon {
+  width: 35px;
+}
+
+.driver-trip-export-icon {
+  width: 23px;
+}

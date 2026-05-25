@@ -4,6 +4,7 @@ import "./DriverTripForm.css";
 
 const STORAGE_KEY = "driver_trip_draft";
 const CHECKLIST_STORAGE_KEY = "driver_trip_checklist";
+const VIEW_STORAGE_KEY = "driver_trip_view";
 
 const saveDraft = (data) => {
   try {
@@ -44,6 +45,7 @@ export default function DriverTripForm() {
   const todosSelecionados = Object.values(checklist).every(Boolean);
 
   const [checklistSalvo, setChecklistSalvo] = useState(false);
+  const [isViewMode, setIsViewMode] = useState(false);
 
   const [me, setMe] = useState(null);
   const [plate, setPlate] = useState("");
@@ -239,6 +241,42 @@ export default function DriverTripForm() {
   }
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const mode = params.get("mode");
+
+    if (mode !== "view") return;
+
+    const savedView = localStorage.getItem(VIEW_STORAGE_KEY);
+
+    if (!savedView) return;
+
+    try {
+      const parsed = JSON.parse(savedView);
+
+      setIsViewMode(true);
+      setChecklistSalvo(true);
+
+      if (parsed.trechos?.length) {
+        setRows(parsed.trechos);
+      }
+
+      if (parsed.premiacaoPercentual !== undefined) {
+        setPremiacao(parsed.premiacaoPercentual);
+      }
+
+      if (parsed.premiacao !== undefined) {
+        setPremiacao(parsed.premiacao);
+      }
+
+      if (parsed.plate) {
+        setPlate(parsed.plate);
+      }
+    } catch (e) {
+      console.warn("Erro ao carregar visualização da viagem", e);
+    }
+  }, []);
+
+  useEffect(() => {
     const savedChecklist = localStorage.getItem(CHECKLIST_STORAGE_KEY);
 
     if (savedChecklist) {
@@ -292,8 +330,45 @@ export default function DriverTripForm() {
   }, []);
 
   const [saving, setSaving] = useState(false);
+  const [savingDraft, setSavingDraft] = useState(false);
   const [err, setErr] = useState("");
   const [ok, setOk] = useState("");
+  const [draftOk, setDraftOk] = useState("");
+
+  const handleSaveDraft = () => {
+    setErr("");
+    setOk("");
+    setDraftOk("");
+    setSavingDraft(true);
+
+    try {
+      const draftPayload = {
+        rows,
+        premiacao,
+        plate,
+        checklist,
+        checklistSalvo,
+        savedAsDraft: true,
+      };
+
+      saveDraft(draftPayload);
+
+      localStorage.setItem(
+        CHECKLIST_STORAGE_KEY,
+        JSON.stringify({
+          checklist,
+          checklistSalvo,
+          dataChecklist: new Date().toISOString(),
+        })
+      );
+
+      setDraftOk("Rascunho salvo com sucesso.");
+    } catch (e) {
+      setErr("Erro ao salvar rascunho.");
+    } finally {
+      setSavingDraft(false);
+    }
+  };
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -386,6 +461,42 @@ export default function DriverTripForm() {
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleCancelReset = () => {
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(CHECKLIST_STORAGE_KEY);
+
+    setRows([
+      {
+        data: new Date().toISOString().slice(0, 10),
+        origem: "",
+        destino: "",
+        frete: 0,
+        adiantamento: 0,
+        saldo: 0,
+        kmInicial: 0,
+        kmFinal: 0,
+        posto: "",
+        litros: 0,
+        mediaTrecho: 0,
+        pago: false,
+      },
+    ]);
+
+    setChecklist({
+      pneusCalibrados: false,
+      freiosVerificados: false,
+      luzesFuncionando: false,
+      nivelOleo: false,
+      cargaConferida: false,
+      documentosConferidos: false,
+    });
+
+    setChecklistSalvo(false);
+    setErr("");
+    setOk("");
+    setDraftOk("");
   };
 
   return (
@@ -521,9 +632,9 @@ export default function DriverTripForm() {
                     <th>KM Fin</th>
                     <th>Posto</th>
                     <th>Litros</th>
-                    <th>Média</th>
+                    {/* <th>Média</th> */}
                     {/* <th>Assinador</th> */}
-                    <th>Pago?</th>
+                    {/* <th>Pago?</th> */}
                     <th></th>
                   </tr>
                 </thead>
@@ -585,6 +696,7 @@ export default function DriverTripForm() {
                         <input
                           className="inp"
                           type="number"
+                          step="0.01"
                           value={r.kmInicial}
                           onChange={(e) =>
                             setRow(i, "kmInicial", e.target.value)
@@ -595,6 +707,7 @@ export default function DriverTripForm() {
                         <input
                           className="inp"
                           type="number"
+                          step="0.01"
                           value={r.kmFinal}
                           onChange={(e) => setRow(i, "kmFinal", e.target.value)}
                         />
@@ -615,7 +728,7 @@ export default function DriverTripForm() {
                           onChange={(e) => setRow(i, "litros", e.target.value)}
                         />
                       </td>
-                      <td>
+                      {/* <td>
                         <input
                           className="inp disabled"
                           type="number"
@@ -623,7 +736,7 @@ export default function DriverTripForm() {
                           value={r.mediaTrecho}
                           readOnly
                         />
-                      </td>
+                      </td> */}
                       {/* <td>
                         <input
                           className="inp"
@@ -633,15 +746,15 @@ export default function DriverTripForm() {
                           }
                         />
                       </td> */}
-                      <td style={{ textAlign: "center" }}>
+                      {/* <td style={{ textAlign: "center" }}>
                         <input
                           type="checkbox"
                           checked={!!r.pago}
                           onChange={(e) => setRow(i, "pago", e.target.checked)}
                         />
-                      </td>
+                      </td> */}
                       <td>
-                        {rows.length > 1 && (
+                        {rows.length > 1 && !isViewMode && (
                           <button
                             type="button"
                             className="btn-ghost driver-row-remove"
@@ -660,13 +773,15 @@ export default function DriverTripForm() {
 
             {/* Totais por linhas */}
             <div className="row gap driver-trip-lines-summary">
-              <button
-                type="button"
-                className="btn btn-secondary btn-sm"
-                onClick={addRow}
-              >
-                + Adicionar trecho
-              </button>
+              {!isViewMode && (
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  onClick={addRow}
+                >
+                  + Adicionar trecho
+                </button>
+              )}
               <div className="muted">
                 Total frete (linhas):{" "}
                 <b>{brCurrency(totalFreteLinhas)}</b>
@@ -774,25 +889,38 @@ export default function DriverTripForm() {
 
             {err && <div className="alert alert-danger">{err}</div>}
             {ok && <div className="alert alert-success">{ok}</div>}
+            {draftOk && <div className="alert alert-success">{draftOk}</div>}
 
+          {!isViewMode && (
             <div className="row end gap driver-trip-actions">
               <button
                 className="btn-ghost"
                 type="button"
-                onClick={() => window.history.back()}
-                disabled={saving}
-                style={{color: "black"}}
+                onClick={handleCancelReset}
+                disabled={saving || savingDraft}
+                style={{ color: "black" }}
               >
                 Cancelar
               </button>
+
+              <button
+                className="btn btn-warning"
+                type="button"
+                onClick={handleSaveDraft}
+                disabled={saving || savingDraft}
+              >
+                {savingDraft ? "Salvando rascunho..." : "Salvar rascunho"}
+              </button>
+
               <button
                 className="btn btn-primary"
                 type="submit"
-                disabled={saving}
+                disabled={saving || savingDraft}
               >
-                {saving ? "Salvando..." : "Salvar"}
+                {saving ? "Salvando versão final..." : "Salvar versão final"}
               </button>
             </div>
+          )}
           </form>
         )}
       </div>
