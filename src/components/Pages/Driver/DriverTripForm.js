@@ -49,7 +49,7 @@ export default function DriverTripForm() {
 
   const [me, setMe] = useState(null);
   const [plate, setPlate] = useState("");
-
+  const [companyName, setCompanyName] = useState("");
   const [premiacao, setPremiacao] = useState(0);
   // const [totalAssinado, setTotalAssinado] = useState(0);
   // const [totalPago, setTotalPago] = useState(0);
@@ -114,7 +114,7 @@ export default function DriverTripForm() {
         },
       ];
 
-      saveDraft({ rows: updated, premiacao, plate });
+      saveDraft({ rows: updated, premiacao, plate, companyName });
       return updated;
     });
 
@@ -123,7 +123,7 @@ export default function DriverTripForm() {
   const rmRow = (idx) =>
     setRows((r) => {
       const updated = r.filter((_, i) => i !== idx);
-      saveDraft({ rows: updated, premiacao, plate });
+      saveDraft({ rows: updated, premiacao, plate, companyName });
       return updated;
     });
 
@@ -166,6 +166,7 @@ export default function DriverTripForm() {
         rows: clone,
         premiacao,
         plate,
+        companyName,
       });
 
       return clone;
@@ -322,7 +323,7 @@ export default function DriverTripForm() {
 
         if (parsed.rows?.length) setRows(parsed.rows);
         if (parsed.premiacao !== undefined) setPremiacao(parsed.premiacao);
-        if (parsed.plate) setPlate(parsed.plate);
+        if (parsed.companyName) setCompanyName(parsed.companyName);
       } catch (e) {
         console.warn("Erro ao restaurar viagem em aberto", e);
       }
@@ -346,6 +347,7 @@ export default function DriverTripForm() {
         rows,
         premiacao,
         plate,
+        companyName,
         checklist,
         checklistSalvo,
         savedAsDraft: true,
@@ -398,7 +400,7 @@ export default function DriverTripForm() {
         driverId: me?.id,
         driverName: me?.name,
         plate,
-
+        companyName,
         kmInicial,
         kmFinal,
         litrosTotal,
@@ -494,6 +496,7 @@ export default function DriverTripForm() {
     });
 
     setChecklistSalvo(false);
+    setCompanyName("");
     setErr("");
     setOk("");
     setDraftOk("");
@@ -808,6 +811,26 @@ export default function DriverTripForm() {
                   onChange={(e) => setPlate(e.target.value)}
                   placeholder="ABC-1D23"
                   readOnly
+                />
+              </label>
+
+              <label className="driver-field-grow">
+                <span>Empresa</span>
+                <input
+                  className="inp"
+                  value={companyName}
+                  onChange={(e) => {
+                    setCompanyName(e.target.value);
+
+                    saveDraft({
+                      rows,
+                      premiacao,
+                      plate,
+                      companyName: e.target.value,
+                    });
+                  }}
+                  placeholder="Nome da empresa"
+                  readOnly={isViewMode}
                 />
               </label>
 

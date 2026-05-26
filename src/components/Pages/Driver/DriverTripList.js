@@ -363,7 +363,7 @@ export default function DriverTripList() {
                               : "Editar rascunho"
                           }
                         >
-                          <img className="driver-trip-edit-icon" src="https://i.imgur.com/GoMRDvt.png" alt="Editar" />
+                          Editar
                         </button>
 
                         {t.tipoRegistro !== "rascunho" && (
@@ -373,7 +373,7 @@ export default function DriverTripList() {
                             onClick={() => exportTripPDF(t)}
                             style={{ marginLeft: "8px" }}
                           >
-                            <img className="driver-trip-export-icon" src="https://i.imgur.com/rH782Yn.png" alt="Exportar" />
+                            Exportar PDF
                           </button>
                         )}
                         {t.tipoRegistro !== "rascunho" && (
@@ -383,7 +383,7 @@ export default function DriverTripList() {
                             onClick={() => handleViewTrip(t)}
                             style={{ marginLeft: "8px" }}
                           >
-                            <img className="driver-trip-export-icon" src="https://i.imgur.com/IXAQ4ZG.png" alt="Ver mais" />
+                            Ver detalhes
                           </button>
                         )}
                       </td>

@@ -97,7 +97,7 @@
 .admin-trips-row-actions {
   display: flex;
   justify-content: center;
-  gap: 6px;
+  gap: 15px;
   flex-wrap: wrap;
 }
 

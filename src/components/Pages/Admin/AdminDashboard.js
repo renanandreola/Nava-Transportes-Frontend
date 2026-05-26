@@ -2,6 +2,27 @@ import React, { useEffect, useState } from "react";
 import api from "../../../services/api";
 import "./AdminDashboard.css";
 
+const n = (v) => (isNaN(Number(v)) ? 0 : Number(v));
+
+const brCurrency = (v) =>
+  n(v).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+
+const asArray = (v) => (Array.isArray(v) ? v : []);
+
+const isTripFinished = (trip) => {
+  return (
+    trip.finalizado === true ||
+    trip.finished === true ||
+    trip.status === "finalizado"
+  );
+};
+
+const getSaldoAReceber = (trip) => {
+  const trechos = asArray(trip.trechos);
+
+  return trechos.reduce((s, r) => s + n(r.saldo), 0);
+};
+
 export default function AdminDashboard() {
   const [me, setMe] = useState(null);
 
@@ -9,8 +30,8 @@ export default function AdminDashboard() {
   const [err, setErr] = useState("");
 
   const [totalUsers, setTotalUsers] = useState(0);
-  const [totalDrivers, setTotalDrivers] = useState(0);
-  const [totalAdmins, setTotalAdmins] = useState(0);
+  const [totalOpenTrips, setTotalOpenTrips] = useState(0);
+  const [totalSaldoAReceber, setTotalSaldoAReceber] = useState(0);
 
   const [latest, setLatest] = useState([]);
 
@@ -36,16 +57,24 @@ export default function AdminDashboard() {
       const meResp = await api.get("/auth/me");
       setMe(meResp?.data?.user || null);
 
-      const [all, drivers, admins, latestResp] = await Promise.all([
+      const [all, latestResp, tripsResp] = await Promise.all([
         api.get("/admin/users", { params: { limit: 1 } }),
-        api.get("/admin/users", { params: { role: "driver", limit: 1 } }),
-        api.get("/admin/users", { params: { role: "admin", limit: 1 } }),
         api.get("/admin/users", { params: { limit: 5 } }),
+        api.get("/admin/trips", { params: { limit: 1000 } }),
       ]);
 
+      const trips = tripsResp?.data?.items || [];
+
+      const openTrips = trips.filter((trip) => !isTripFinished(trip));
+
+      const saldoAReceber = openTrips.reduce(
+        (s, trip) => s + getSaldoAReceber(trip),
+        0
+      );
+
       setTotalUsers(all?.data?.total ?? 0);
-      setTotalDrivers(drivers?.data?.total ?? 0);
-      setTotalAdmins(admins?.data?.total ?? 0);
+      setTotalOpenTrips(openTrips.length);
+      setTotalSaldoAReceber(saldoAReceber);
       setLatest(latestResp?.data?.items || []);
     } catch (e) {
       setErr(e?.response?.data?.message || "Falha ao carregar dados");
@@ -97,16 +126,19 @@ export default function AdminDashboard() {
         <div className="dashboard-grid">
           <div className="dashboard-stat">
             <div className="dashboard-stat-label">
-              Motoristas ativos
+              Viagens não finalizadas
             </div>
             <div className="dashboard-stat-num">
-              {loading ? "—" : totalDrivers}
+              {loading ? "—" : totalOpenTrips}
             </div>
           </div>
+
           <div className="dashboard-stat">
-            <div className="dashboard-stat-label">Administradores</div>
+            <div className="dashboard-stat-label">
+              Saldo a receber
+            </div>
             <div className="dashboard-stat-num">
-              {loading ? "—" : totalAdmins}
+              {loading ? "—" : brCurrency(totalSaldoAReceber)}
             </div>
           </div>
           <div className="dashboard-stat">

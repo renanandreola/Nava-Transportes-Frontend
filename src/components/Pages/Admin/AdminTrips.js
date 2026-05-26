@@ -176,6 +176,7 @@ export default function AdminTrips() {
       return [
         formatDate(dataPrincipal),
         t.driverName || "-",
+        t.companyName || "-",
         t.plate || "-",
         kmIni || "-",
         kmFim || "-",
@@ -187,11 +188,12 @@ export default function AdminTrips() {
     });
 
     autoTable(doc, {
-      startY: 34,
+      startY: 35,
       head: [
         [
           "Data",
           "Motorista",
+          "Empresa",
           "Placa",
           "KM Inicial",
           "KM Final",
@@ -229,7 +231,7 @@ export default function AdminTrips() {
         driverId: full.driverId || "",
         driverName: full.driverName || "",
         plate: (full.plate || "").toUpperCase(),
-
+        companyName: full.companyName || "",
         data: full.data || "",
         createdAt: full.createdAt || "",
 
@@ -302,7 +304,7 @@ export default function AdminTrips() {
         driverId: editForm.driverId || undefined,
         driverName: editForm.driverName || undefined,
         plate: (editForm.plate || "").trim().toUpperCase(),
-
+        companyName: editForm.companyName || "",
         data: editForm.data ? new Date(editForm.data) : undefined,
 
         latitude:
@@ -434,6 +436,7 @@ export default function AdminTrips() {
               <h3>Detalhes do controle de saída</h3>
               <p className="muted small">
                 Motorista: <b>{t.driverName || "-"}</b> • Placa:{" "}
+                <b>{t.companyName || "-"}</b> • Placa:{" "}
                 <b>{t.plate || "-"}</b> • Data principal:{" "}
                 <b>{formatDate(dataPrincipal)}</b>
               </p>
@@ -635,6 +638,216 @@ export default function AdminTrips() {
     }));
   };
 
+  const handleExportTripPdf = (trip) => {
+    if (!trip) return;
+
+    const doc = new jsPDF();
+
+    const trechos = asArray(trip.trechos);
+    const extras = asArray(trip.extras);
+
+    const kmIni = n(trip.kmInicial);
+    const kmFim = n(trip.kmFinal);
+    const kmRodado = kmFim - kmIni;
+
+    const totalSaldo = trechos.reduce((s, r) => s + n(r.saldo), 0);
+    const totalAdiantado = trechos.reduce((s, r) => s + n(r.adiantamento), 0);
+    const totalLitros = trechos.reduce((s, r) => s + n(r.litros), 0);
+
+    // const dataPrincipal =
+    //   trechos && trechos.length ? trechos[0].data : trip.data || trip.createdAt;
+
+    doc.setFontSize(16);
+    doc.text("Relatório da Viagem", 14, 15);
+
+    doc.setFontSize(10);
+
+    // Bloco superior esquerdo
+    let yLeft = 25;
+    doc.text(`Motorista: ${trip.driverName || "-"}`, 14, yLeft);
+    yLeft += 7;
+    doc.text(`Empresa: ${trip.companyName || "-"}`, 14, yLeft);
+    yLeft += 7;
+    doc.text(`Placa: ${trip.plate || "-"}`, 14, yLeft);
+    yLeft += 7;
+    // doc.text(`Data principal: ${formatDate(dataPrincipal)}`, 14, yLeft);
+    yLeft += 7;
+    doc.text(`Criado em: ${formatDateTime(trip.createdAt)}`, 14, yLeft);
+
+    // Bloco veículo
+    let yVehicle = 70;
+    doc.text(`KM Inicial: ${kmIni || "-"}`, 14, yVehicle);
+    yVehicle += 7;
+    doc.text(`KM Final: ${kmFim || "-"}`, 14, yVehicle);
+    yVehicle += 7;
+    doc.text(`KM Rodado: ${kmRodado || "-"}`, 14, yVehicle);
+    yVehicle += 7;
+    doc.text(`Litros Total: ${totalLitros || "-"}`, 14, yVehicle);
+    yVehicle += 7;
+    doc.text(`Média Geral: ${trip.mediaGeral || "-"}`, 14, yVehicle);
+
+    // Bloco financeiro
+    let yFinance = 70;
+    doc.text(
+      `Total do Frete: ${brCurrency(trip.totalDoFrete || trip.totalFrete)}`,
+      110,
+      yFinance
+    );
+    yFinance += 7;
+    doc.text(`Total Adiantado: ${brCurrency(totalAdiantado)}`, 110, yFinance);
+    yFinance += 7;
+    doc.text(`Saldo: ${brCurrency(totalSaldo)}`, 110, yFinance);
+    yFinance += 7;
+    doc.text(
+      `Premiação: ${brCurrency(trip.premiacaoValor || 0)} (${trip.premiacaoPercentual || 0}%)`,
+      110,
+      yFinance
+    );
+
+    if (trip.latitude && trip.longitude) {
+      yFinance += 7;
+      doc.text(
+        `Localização: ${Number(trip.latitude).toFixed(5)}, ${Number(trip.longitude).toFixed(5)}`,
+        110,
+        yFinance
+      );
+    }
+
+    let startY = 110;
+
+    if (extras.length > 0) {
+      autoTable(doc, {
+        startY,
+        head: [["Extras", "Valor"]],
+        body: extras.map((ex) => [
+          ex.descricao || "-",
+          brCurrency(ex.valor),
+        ]),
+        styles: { fontSize: 8 },
+        headStyles: { fillColor: [37, 99, 235] },
+      });
+
+      startY = doc.lastAutoTable.finalY + 10;
+    }
+
+    autoTable(doc, {
+      startY,
+      head: [
+        [
+          "Data",
+          "Origem",
+          "Destino",
+          "Frete",
+          "Adiant.",
+          "Saldo",
+          "KM Ini",
+          "KM Fin",
+          "Posto",
+          "Litros",
+          "Média",
+          "Pago?",
+        ],
+      ],
+      body: trechos.map((r) => [
+        formatDate(r.data),
+        r.origem || "-",
+        r.destino || "-",
+        brCurrency(r.frete),
+        brCurrency(r.adiantamento),
+        brCurrency(r.saldo),
+        n(r.kmInicial) || "-",
+        n(r.kmFinal) || "-",
+        r.posto || "-",
+        n(r.litros) || "-",
+        n(r.mediaTrecho) || "-",
+        r.pago ? "Sim" : "Não",
+      ]),
+      styles: { fontSize: 7 },
+      headStyles: { fillColor: [37, 99, 235] },
+    });
+
+    const fileName = `viagem-${trip.plate || "sem-placa"}-${trip.driverName || "motorista"}.pdf`
+      .replace(/\s+/g, "-")
+      .toLowerCase();
+
+    doc.save(fileName);
+  };
+
+  const isTripFinished = (trip) => {
+    return (
+      trip.finalizado === true ||
+      trip.finished === true ||
+      trip.status === "finalizado"
+    );
+  };
+
+  const getTripTotals = (trip) => {
+    const trechos = asArray(trip.trechos);
+
+    const totalFrete = n(trip.totalDoFrete || trip.totalFrete);
+
+    const totalAdiantado = trechos.reduce(
+      (s, r) => s + n(r.adiantamento),
+      0
+    );
+
+    const saldoAReceber = trechos.reduce(
+      (s, r) => s + n(r.saldo),
+      0
+    );
+
+    const totalRecebido =
+      totalAdiantado > 0 ? totalAdiantado : Math.max(0, totalFrete - saldoAReceber);
+
+    const mediaCaminhao =
+      n(trip.mediaGeral) > 0
+        ? n(trip.mediaGeral)
+        : n(trip.litrosTotal) > 0
+          ? +((n(trip.kmFinal) - n(trip.kmInicial)) / n(trip.litrosTotal)).toFixed(2)
+          : 0;
+
+    return {
+      mediaCaminhao,
+      totalRecebido,
+      saldoAReceber,
+    };
+  };
+
+  const handleFinishTrip = async (trip) => {
+    if (!trip || isTripFinished(trip)) return;
+
+    const ok = window.confirm(
+      `Deseja finalizar a viagem da placa "${trip.plate || "-"}"?`
+    );
+
+    if (!ok) return;
+
+    try {
+      await api.put(`/admin/trips/${trip._id}`, {
+        finalizado: true,
+        finished: true,
+        status: "finalizado",
+        finishedAt: new Date().toISOString(),
+      });
+
+      setTrips((prev) =>
+        prev.map((item) =>
+          item._id === trip._id
+            ? {
+                ...item,
+                finalizado: true,
+                finished: true,
+                status: "finalizado",
+                finishedAt: new Date().toISOString(),
+              }
+            : item
+        )
+      );
+    } catch (e) {
+      alert(e?.response?.data?.message || "Erro ao finalizar viagem");
+    }
+  };
+
   return (
     <div className="card admin-trips-card">
       <div className="card-head row">
@@ -658,7 +871,7 @@ export default function AdminTrips() {
 
           <button
             type="button"
-            className="btn btn-secondary"
+            className="btn btn-danger"
             onClick={handleExportPdf}
             disabled={loading || !trips.length}
           >
@@ -762,15 +975,20 @@ export default function AdminTrips() {
               <tr>
                 {/* <th>Data</th> */}
                 <th>Motorista</th>
+                <th>Empresa</th>
                 <th>Placa</th>
                 <th>KM Inicial</th>
                 <th>KM Final</th>
                 <th>KM Rodado</th>
                 <th>Total Frete</th>
                 <th>Premiação</th>
+                <th>Média caminhão</th>
+                <th>Total recebido</th>
+                <th>Saldo a receber</th>
                 {/* <th>Local</th> */}
                 <th>Criado em</th>
                 <th className="admin-trips-actions-col">Ações</th>
+                <th className="admin-trips-actions-col">Finalizar</th>
               </tr>
             </thead>
             <tbody>
@@ -784,10 +1002,17 @@ export default function AdminTrips() {
 
                 const hasCoords = t.latitude && t.longitude;
 
+                const finished = isTripFinished(t);
+                const { mediaCaminhao, totalRecebido, saldoAReceber } = getTripTotals(t);
+
                 return (
-                  <tr key={t._id}>
+                  <tr
+                    key={t._id}
+                    className={finished ? "admin-trip-row-finished" : ""}
+                  >
                     {/* <td>{formatDate(dataPrincipal)}</td> */}
                     <td>{t.driverName || "-"}</td>
+                    <td>{t.companyName || "-"}</td>
                     <td>{t.plate || "-"}</td>
                     <td>{kmIni || "-"}</td>
                     <td>{kmFim || "-"}</td>
@@ -796,6 +1021,20 @@ export default function AdminTrips() {
                     <td>
                       {brCurrency(t.premiacaoValor || 0)}
                       <span className="muted"> ({t.premiacaoPercentual || 0}%)</span>
+                    </td>
+                    <td>{mediaCaminhao || "-"} km/l</td>
+                    <td>{brCurrency(totalRecebido)}</td>
+
+                    <td>
+                      <b
+                        className={
+                          finished
+                            ? "admin-trip-saldo-finalizado"
+                            : "admin-trip-saldo-aberto"
+                        }
+                      >
+                        {brCurrency(saldoAReceber)}
+                      </b>
                     </td>
                     {/* <td>
                       {hasCoords ? (
@@ -822,6 +1061,14 @@ export default function AdminTrips() {
 
                       <button
                         type="button"
+                        className="btn btn-sm btn-outline-success"
+                        onClick={() => handleExportTripPdf(t)}
+                      >
+                        PDF
+                      </button>
+
+                      <button
+                        type="button"
                         className="btn btn-sm btn-outline-primary"
                         onClick={() => openEditModal(t)}
                       >
@@ -834,6 +1081,17 @@ export default function AdminTrips() {
                         onClick={() => handleDelete(t)}
                       >
                         Excluir
+                      </button>
+                    </td>
+                    <td style={{ textAlign: "center" }}>
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-success"
+                        onClick={() => handleFinishTrip(t)}
+                        disabled={finished}
+                        title={finished ? "Viagem já finalizada" : "Finalizar viagem"}
+                      >
+                        {finished ? "Finalizada" : "Finalizar"}
                       </button>
                     </td>
                   </tr>
@@ -918,6 +1176,21 @@ export default function AdminTrips() {
                         }))
                       }
                       required
+                    />
+                  </div>
+
+                  <div className="form-field">
+                    <label>Empresa</label>
+                    <input
+                      className="form-control"
+                      value={editForm.companyName || ""}
+                      onChange={(e) =>
+                        setEditForm((p) => ({
+                          ...p,
+                          companyName: e.target.value,
+                        }))
+                      }
+                      placeholder="Nome da empresa"
                     />
                   </div>
 
@@ -1059,7 +1332,7 @@ export default function AdminTrips() {
 
                 {/* EXTRAS */}
                 <div className="admin-trips-section">
-                  <div className="row gap" style={{ justifyContent: "space-between" }}>
+                  <div className="gap" style={{ justifyContent: "space-between" }}>
                     <h4 style={{ margin: 0 }}>Extras</h4>
                     <button
                       type="button"
@@ -1108,10 +1381,10 @@ export default function AdminTrips() {
                               <td>
                                 <button
                                   type="button"
-                                  className="btn btn-sm btn-outline-danger"
+                                  className="btn btn-sm btn-danger"
                                   onClick={() => removeExtra(idx)}
                                 >
-                                  Remover
+                                  <img className="driver-trip-export-icon" src="https://i.imgur.com/mH0NKQz.png" alt="Deletar" />
                                 </button>
                               </td>
                             </tr>
@@ -1124,7 +1397,7 @@ export default function AdminTrips() {
 
                 {/* TRECHOS */}
                 <div className="admin-trips-section">
-                  <div className="row gap" style={{ justifyContent: "space-between" }}>
+                  <div className="gap" style={{ justifyContent: "space-between" }}>
                     <h4 style={{ margin: 0 }}>Trechos</h4>
                     <button
                       type="button"
@@ -1273,10 +1546,10 @@ export default function AdminTrips() {
                               <td>
                                 <button
                                   type="button"
-                                  className="btn btn-sm btn-outline-danger"
+                                  className="btn btn-sm btn-danger"
                                   onClick={() => removeTrecho(idx)}
                                 >
-                                  Remover
+                                  <img className="driver-trip-export-icon" src="https://i.imgur.com/mH0NKQz.png" alt="Deletar" />
                                 </button>
                               </td>
                             </tr>
