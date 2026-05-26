@@ -43,13 +43,13 @@ export default function AdminTrips() {
   const [viewingTrip, setViewingTrip] = useState(null);
   const [mapTrip, setMapTrip] = useState(null);
 
-  const openMapModal = (trip) => {
-    if (!trip || !trip.latitude || !trip.longitude) return;
-    setMapTrip(trip);
-    setMapOpen(true);
-    setAllowBackdropClose(false);
-    setTimeout(() => setAllowBackdropClose(true), 150);
-  };
+  // const openMapModal = (trip) => {
+  //   if (!trip || !trip.latitude || !trip.longitude) return;
+  //   setMapTrip(trip);
+  //   setMapOpen(true);
+  //   setAllowBackdropClose(false);
+  //   setTimeout(() => setAllowBackdropClose(true), 150);
+  // };
 
   const closeMapModal = () => {
     setMapOpen(false);
@@ -997,10 +997,10 @@ export default function AdminTrips() {
                 const kmFim = n(t.kmFinal);
                 const kmRodado = kmFim - kmIni;
 
-                const dataPrincipal =
-                  t.trechos && t.trechos.length ? t.trechos[0].data : t.data || t.createdAt;
+                // const dataPrincipal =
+                //   t.trechos && t.trechos.length ? t.trechos[0].data : t.data || t.createdAt;
 
-                const hasCoords = t.latitude && t.longitude;
+                // const hasCoords = t.latitude && t.longitude;
 
                 const finished = isTripFinished(t);
                 const { mediaCaminhao, totalRecebido, saldoAReceber } = getTripTotals(t);
